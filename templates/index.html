@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Indiana School Academic Dashboard</title>
+
+   <!-- Imported Fonts -->
+   <link  rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.11.2/css/all.css" integrity="sha384-zrnmn8R8KkWl12rAZFt4yKjxplaDaT7/EUkKm7AovijfrQItFWR7O/JJn4DAa/gx" crossorigin="anonymous">
+
+   <!-- Third-Party Modules -->
+   <script src="{{ url_for('static', filename='ag-grid-community.min.js')}}"></script>
+
+   <!-- Local Modules -->
+   <script src="{{ url_for('static', filename='table-helpers.js')}}"></script>
+   <script src="{{ url_for('static', filename='utils.js')}}"></script>
+   <script src="{{ url_for('static', filename='globals.js')}}"></script>
+
+   <!-- Imported Stylesheets -->
+   <link rel="stylesheet" media="all" href="{{ url_for('static', filename='dashboard.css')}}">
+</head>
+<body>
+   <h3>State and School District Information</h3>
+   <form name="dashboardselect" id="dropdown">
+      <label>Select State:</label>
+      <select name="state" id="stateSelect"></select>
+      <br>
+      <label>Select District:</label>
+      <select name="district" id="districtSelect"></select>
+   </form>
+   
+   <div class="row">
+      <div class="panel-container">
+         <section id="state">
+            <div class="grid">
+               <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
+               <div class="state-box state-info" id="container-state-info">
+                  <div id="state-info-table-1" class="state-table-1"></div>
+                  <div id="state-info-table-2" class="state-table-2"></div>
+               </div>
+            </div>  
+         </section>
+         <section id="district">
+            <div class="grid">
+               <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header-sm"></div></div>
+               <div class="district-box district-info" id="container-district-info">
+                  <div id="district-info-table" class="district-table"></div>
+               </div>
+            </div>  
+         </section>
+         <section id="table">
+            <div class="grid">
+               <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header-sm"></div></div>
+               <div class="table-box state-table" id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+            </div>  
+         </section>
+      </div>  
+   </div>
+</body>
+<script type="module">
+
+// National State and School District Info
+// author:   jbetley (https://github.com/jbetley)
+// version:  0.9
+// date:     03.22.25
+
+const allStatesUrl = `${window.origin}/load`;
+const allStatesResponse = await fetch(allStatesUrl);
+var allStatesObj = await allStatesResponse.json();
+
+var tableGridApi;
+
+async function getStateData(select) {
+   const data = await fetch(`${window.origin}/states`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(select)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
+         }
+      });
+
+   await setDistrictList()
+   displayStateData(data);
+};
+
+
+async function getDistrictData(select) {
+   const data = await fetch(`${window.origin}/districts`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(select)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
+         }
+      });
+   displayDistrictData(data);
+};
+
+
+async function setStateList() {
+   const uniqueStates = [...new Map(allStatesObj.map(
+      item => [item["State Abbreviation"], item]
+   )).values()];
+
+   let stateDropdown = uniqueStates.map(
+      el => ({[el["State Abbreviation"]]: el["State Full"]})
+   );
+
+   removeOptions(stateSelection);
+
+   stateDropdown.forEach(obj => {
+      Object.entries(obj).forEach(([key, value]) => {
+         stateSelection.appendChild(new Option(value, key));
+      });
+   });
+};
+
+
+async function setDistrictList() {
+   const stateDistricts = allStatesObj.filter(
+      val => val["State Abbreviation"].includes(stateSelection.value)
+   );
+
+   const districtObj = stateDistricts.map(obj => ({ name: obj["State District Name"]}));
+
+   // a different way to get unique values (see setStateList)
+   let districtDropdown = Array.from(
+      new Set(districtObj.map(o => JSON.stringify(o)))).map(str => JSON.parse(str)
+   );
+
+   removeOptions(districtSelection);
+
+   districtDropdown.forEach(
+      (obj) => districtSelection
+      .appendChild(new Option(obj.name, obj.name))
+   );
+};
+
+
+var stateSelection = document.getElementById("stateSelect");
+
+stateSelection.addEventListener("change", async () => {
+   await setDistrictList();
+   await getStateData(stateSelection.value);
+   getDistrictData(stateSelection.value);
+});
+
+var districtSelection = document.getElementById("districtSelect");
+
+districtSelection.addEventListener("change", async () => {
+   getDistrictData(stateSelection.value);
+});
+
+
+async function displayStateData(data) {
+
+   const stateName = stateSelection.options[stateSelection.selectedIndex].text;
+   let stateLabel = document.getElementById("container-state-label");
+   stateLabel.firstChild.textContent = stateName + " Overview";
+
+   const [firstPart, secondPart] = splitObject(data[0], 6);
+
+   stateInfoTable(secondPart, "state-info-table-1");
+   allocationsTable(firstPart, "state-info-table-2");
+
+   getDistrictData(stateSelection.value);
+};
+
+
+async function displayDistrictData(data) {
+
+   const districtName = districtSelection.options[districtSelection.selectedIndex].text;
+   const stateName = stateSelection.options[stateSelection.selectedIndex].text;
+   let districtLabel = document.getElementById("container-district-label");
+   districtLabel.firstChild.textContent = districtName + " Overview";
+
+   // District Static-Info Tables
+   let districtData = data.filter(
+      val => val["State District Name"].includes(districtSelection.value)
+   );
+
+   districtInfoTable(districtData[0], "district-info-table");
+
+   // District Ag-Grid Table
+   let tableLabel = document.getElementById("container-table-label");
+   tableLabel.firstChild.textContent = stateName +  " School Districts";
+
+   // remove unused columns
+   let kept = ["State District ID", "State District Name", "Allocation Year", "Title I Allocation"];
+   let tabledata = filterObj(data, kept);
+
+   let tableOptions = createStateTable(tabledata,"stateTable");
+
+   if (!displayDistrictData.initialize) {
+
+      const tableGridDiv = document.querySelector("#stateTable");
+      tableGridApi = agGrid.createGrid(
+            tableGridDiv, tableOptions
+         );
+         displayDistrictData.initialize = true;
+   }
+   else {
+      tableGridApi.setGridOption(
+            "columnDefs", tableOptions.columnDefs
+         );
+      tableGridApi.setGridOption("rowData", tabledata);
+   }
+};
+
+/* Initialize App */
+// Preload all charts on all tabs on first load
+if (document.readyState !== "loading") {
+
+   await setStateList()
+   await getStateData(stateSelection.value);
+
+};
+</script>
+</html>
