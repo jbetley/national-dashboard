@@ -15,7 +15,6 @@
    <!-- Local Modules -->
    <script src="{{ url_for('static', filename='table-helpers.js')}}"></script>
    <script src="{{ url_for('static', filename='utils.js')}}"></script>
-   <script src="{{ url_for('static', filename='globals.js')}}"></script>
 
    <!-- Imported Stylesheets -->
    <link rel="stylesheet" media="all" href="{{ url_for('static', filename='dashboard.css')}}">
@@ -90,6 +89,7 @@ async function getStateData(select) {
       });
 
    await setDistrictList()
+
    displayStateData(data);
 };
 
@@ -192,6 +192,8 @@ async function displayDistrictData(data) {
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = districtName + " Overview";
 
+   console.log(data)
+   
    // District Static-Info Tables
    let districtData = data.filter(
       val => val["State District Name"].includes(districtSelection.value)

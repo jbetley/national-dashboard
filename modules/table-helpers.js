@@ -19,7 +19,7 @@ function stateInfoTable(data, id) {
   var tableBody = document.createElement('TBODY');
   table.appendChild(tableBody);
 
-  for (var i = 0; i < 5; i++) {
+  for (var i = 0; i < 6; i++) {
      var tr = document.createElement('TR');
      tableBody.appendChild(tr);
 
@@ -31,7 +31,7 @@ function stateInfoTable(data, id) {
            td.width = '50';
         }
         
-        td.height = '15';
+        td.height = '12';
         
         if (i==0) {
            if (j==0) {
@@ -71,6 +71,14 @@ function stateInfoTable(data, id) {
               td.appendChild(document.createTextNode(data["ESA Program"]));
            }
         }
+        else {
+         if (j==0) {
+            td.appendChild(document.createTextNode("Written Notice Required"));
+         }
+         else {
+            td.appendChild(document.createTextNode(data["Written Notice"]));
+         }
+      }
         tr.appendChild(td);
      }
   }
@@ -108,14 +116,14 @@ function allocationsTable(object, id) {
      for (var j = 0; j < 4; j++) {
         var td = document.createElement('TD');
         if (j == 0) {
-           td.width = '125';
+           td.width = '130';
         } else {
            td.width = '75';
         }
         td.height = "27.7";
         if (i==0) {
            if (j==0) {
-              td.appendChild(document.createTextNode("Federal Allocations"));
+              td.appendChild(document.createTextNode("Statewide Allocations"));
            }
            else {
               td.appendChild(document.createTextNode(keys[cnt1]));
@@ -145,6 +153,7 @@ function allocationsTable(object, id) {
   }
   allocationsTableDiv.appendChild(table);
 };
+
 
 function districtInfoTable(data, id) {
 
@@ -184,7 +193,8 @@ function districtInfoTable(data, id) {
            if (col==0) {
               td.appendChild(document.createTextNode("Address"));
            } else if (col==1) {
-              td.appendChild(document.createTextNode(data["Address"]));
+
+              td.appendChild(document.createTextNode(proper(data["Address"])));
            }
            else if (col==2) {
               td.appendChild(document.createTextNode(""));
@@ -193,7 +203,7 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode("NCES District Name"));
            }
            else {
-              td.appendChild(document.createTextNode(data["NCES District Name"]));
+              td.appendChild(document.createTextNode(proper(data["NCES District Name"])));
            }
         }
         else if (row==1) {
@@ -201,7 +211,7 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode(""));
            } else if (col==1) {
               td.appendChild(document.createTextNode(
-                 data["City"] + ", " + data["State"] + "  " + data["ZIP"]
+                 proper(data["City"]) + ", " + data["State"] + "  " + data["ZIP"]
               ));
            }  else if (col==2) {
               td.appendChild(document.createTextNode(""));
@@ -218,7 +228,8 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode("Phone Number"));
            }
            else if (col==1) {
-              td.appendChild(document.createTextNode(data["Phone Number"]));
+              const prettyNumber = formatPhoneNumber(data["Phone Number"]);
+              td.appendChild(document.createTextNode(prettyNumber));
            } else if (col==2) {
               td.appendChild(document.createTextNode(""));
            } else if (col==3) {

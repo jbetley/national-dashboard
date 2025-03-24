@@ -89,7 +89,6 @@ def get_state_data(state_id):
 
     params = {"id": state_id}
 
-    # School demographic and attendance data
     w = text(
         """
         SELECT *
