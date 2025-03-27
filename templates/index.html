@@ -28,7 +28,6 @@
       <label>Select District:</label>
       <select name="district" id="districtSelect"></select>
    </form>
-   
    <div class="row">
       <div class="panel-container">
          <section id="state">
@@ -70,6 +69,7 @@ var allStatesObj = await allStatesResponse.json();
 
 var tableGridApi;
 
+
 async function getStateData(select) {
    const data = await fetch(`${window.origin}/states`, {
       method: "POST",
@@ -86,15 +86,13 @@ async function getStateData(select) {
          } else {
             alert("Network Error: Could not load data.")
          }
-      });
-
+   });
    await setDistrictList()
-
    displayStateData(data);
 };
 
 
-async function getDistrictData(select) {
+async function getAllDistrictData(select) {
    const data = await fetch(`${window.origin}/districts`, {
       method: "POST",
          credentials: "include",
@@ -110,7 +108,27 @@ async function getDistrictData(select) {
          } else {
             alert("Network Error: Could not load data.")
          }
-      });
+   });
+   displayDistrictData(data);
+};
+
+async function getSingleDistrictData(select) {
+   const data = await fetch(`${window.origin}/district`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(select)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
+         }
+   });
    displayDistrictData(data);
 };
 
@@ -154,19 +172,77 @@ async function setDistrictList() {
    );
 };
 
+// NOTE: This needs to be in index.html so getSingleDistrictData()
+// is in scope
+function createStateTable(data, tableID) {
+  let keys = Object.keys(data.reduce(function(result, obj) {
+     return Object.assign(result, obj);
+  }, {}));
+
+  keys = keys.filter(item => item != "State District Name");
+  keys.unshift("State District Name")
+
+  let columns = keys.map(field => ({field}));
+
+  columns.forEach(function(e) {
+
+     if (e.field == "State District Name") {
+        e.valueFormatter = "";
+        e.resizable = false;
+        e.autoHeight = true;
+        e.wrapText = true;
+        e.minWidth = 200;
+        e.maxWidth = 200;
+        e.cellClass = "ag-left-aligned-cell";
+        e.headerClass = "text-center";
+      } else if (e.field == "Allocation Year") {
+        e.valueFormatter = blankFormatter;
+        e.flex = 1;
+        e.resizable = false;
+        e.cellClass = "ag-center-aligned-cell";
+        e.headerClass = "text-center";
+     } else if (e.field == "Title I Allocation") {
+        e.valueFormatter = moneyFormatter;
+        e.flex = 1;
+        e.resizable = false;
+        e.cellClass = "ag-center-aligned-cell";
+        e.headerClass = "text-center";
+     }
+     else {
+        e.flex = 1;
+        e.resizable = false;
+        e.cellClass = "ag-center-aligned-cell";
+        e.headerClass = "text-center";
+     }
+  });
+
+  let options = {
+     columnDefs: columns,
+     onRowClicked: function (e) {
+      const school = e.data["State District Name"];
+      getSingleDistrictData(school);
+      },
+     rowData: data,
+     gridId: tableID,
+     tooltipShowDelay: 0,
+     enableBrowserTooltips: false
+  };
+  return options
+};
+
 
 var stateSelection = document.getElementById("stateSelect");
 
 stateSelection.addEventListener("change", async () => {
    await setDistrictList();
    await getStateData(stateSelection.value);
-   getDistrictData(stateSelection.value);
+   getAllDistrictData(stateSelection.value);
 });
 
 var districtSelection = document.getElementById("districtSelect");
 
 districtSelection.addEventListener("change", async () => {
-   getDistrictData(stateSelection.value);
+   getAllDistrictData(stateSelection.value);
 });
 
 
@@ -181,23 +257,34 @@ async function displayStateData(data) {
    stateInfoTable(secondPart, "state-info-table-1");
    allocationsTable(firstPart, "state-info-table-2");
 
-   getDistrictData(stateSelection.value);
+   getAllDistrictData(stateSelection.value);
 };
 
 
 async function displayDistrictData(data) {
 
+   console.log("DISPLA")
+
    const districtName = districtSelection.options[districtSelection.selectedIndex].text;
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = districtName + " Overview";
-
-   console.log(data)
    
-   // District Static-Info Tables
-   let districtData = data.filter(
-      val => val["State District Name"].includes(districtSelection.value)
-   );
+   let districtData;
+   console.log(data.length)
+   if (data.length > 1) {
+
+      // District Static-Info Tables
+      districtData = data.filter(
+         val => val["State District Name"].includes(districtSelection.value)
+      );
+   }
+   else {
+      districtData = data;
+   }
+
+// TODO: SINGLE DISTRICT IS CAUSING TABLE TO BE SINGLE DISTRICT,
+// EITHER DO BACK BUTTON OR CREATE DIFFERENT DISPLAY DISTRICT DATA FUNC
 
    districtInfoTable(districtData[0], "district-info-table");
 

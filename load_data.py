@@ -65,11 +65,10 @@ def get_state_dropdown():
     return run_query(q, params)
 
 
-def get_district_data(state_id):
+def get_all_district_data(state_id):
 
     params = {"id": state_id}
 
-    # School demographic and attendance data
     w = text(
         """
         SELECT *
@@ -85,10 +84,30 @@ def get_district_data(state_id):
     return district_data.reset_index(drop=True)
 
 
+def get_single_district_data(school_name):
+
+    params = {"id": school_name}
+
+    w = text(
+        """
+        SELECT *
+            FROM districts
+            WHERE StateDistrictName = :id
+        """,
+    )
+
+    district_data = run_query(w, params)
+
+    district_data = district_data.sort_values(by="Title I Allocation", ascending=False)
+
+    return district_data.reset_index(drop=True)
+
+
 def get_state_data(state_id):
 
     params = {"id": state_id}
 
+    # School demographic and attendance data
     w = text(
         """
         SELECT *

@@ -2,7 +2,7 @@
 // table processing functions
 // author:   jbetley (https://github.com/jbetley)
 // version:  0.9
-// date:     03/22/25 
+// date:     03/27/25 
 
 
 
@@ -19,7 +19,7 @@ function stateInfoTable(data, id) {
   var tableBody = document.createElement('TBODY');
   table.appendChild(tableBody);
 
-  for (var i = 0; i < 6; i++) {
+  for (var i = 0; i < 5; i++) {
      var tr = document.createElement('TR');
      tableBody.appendChild(tr);
 
@@ -31,7 +31,7 @@ function stateInfoTable(data, id) {
            td.width = '50';
         }
         
-        td.height = '12';
+        td.height = '15';
         
         if (i==0) {
            if (j==0) {
@@ -71,14 +71,6 @@ function stateInfoTable(data, id) {
               td.appendChild(document.createTextNode(data["ESA Program"]));
            }
         }
-        else {
-         if (j==0) {
-            td.appendChild(document.createTextNode("Written Notice Required"));
-         }
-         else {
-            td.appendChild(document.createTextNode(data["Written Notice"]));
-         }
-      }
         tr.appendChild(td);
      }
   }
@@ -116,14 +108,14 @@ function allocationsTable(object, id) {
      for (var j = 0; j < 4; j++) {
         var td = document.createElement('TD');
         if (j == 0) {
-           td.width = '130';
+           td.width = '125';
         } else {
            td.width = '75';
         }
         td.height = "27.7";
         if (i==0) {
            if (j==0) {
-              td.appendChild(document.createTextNode("Statewide Allocations"));
+              td.appendChild(document.createTextNode("Federal Allocations"));
            }
            else {
               td.appendChild(document.createTextNode(keys[cnt1]));
@@ -153,7 +145,6 @@ function allocationsTable(object, id) {
   }
   allocationsTableDiv.appendChild(table);
 };
-
 
 function districtInfoTable(data, id) {
 
@@ -193,8 +184,7 @@ function districtInfoTable(data, id) {
            if (col==0) {
               td.appendChild(document.createTextNode("Address"));
            } else if (col==1) {
-
-              td.appendChild(document.createTextNode(proper(data["Address"])));
+              td.appendChild(document.createTextNode(data["Address"]));
            }
            else if (col==2) {
               td.appendChild(document.createTextNode(""));
@@ -203,7 +193,7 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode("NCES District Name"));
            }
            else {
-              td.appendChild(document.createTextNode(proper(data["NCES District Name"])));
+              td.appendChild(document.createTextNode(data["NCES District Name"]));
            }
         }
         else if (row==1) {
@@ -211,7 +201,7 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode(""));
            } else if (col==1) {
               td.appendChild(document.createTextNode(
-                 proper(data["City"]) + ", " + data["State"] + "  " + data["ZIP"]
+                 data["City"] + ", " + data["State"] + "  " + data["ZIP"]
               ));
            }  else if (col==2) {
               td.appendChild(document.createTextNode(""));
@@ -228,8 +218,7 @@ function districtInfoTable(data, id) {
               td.appendChild(document.createTextNode("Phone Number"));
            }
            else if (col==1) {
-              const prettyNumber = formatPhoneNumber(data["Phone Number"]);
-              td.appendChild(document.createTextNode(prettyNumber));
+              td.appendChild(document.createTextNode(data["Phone Number"]));
            } else if (col==2) {
               td.appendChild(document.createTextNode(""));
            } else if (col==3) {
@@ -294,54 +283,60 @@ function blankFormatter(params) {
 
 
 // Creats Ag-Grid Table
-function createStateTable(data, tableID) {
-  let keys = Object.keys(data.reduce(function(result, obj) {
-     return Object.assign(result, obj);
-  }, {}));
+// function createStateTable(data, tableID) {
+//   let keys = Object.keys(data.reduce(function(result, obj) {
+//      return Object.assign(result, obj);
+//   }, {}));
 
-  keys = keys.filter(item => item != "State District Name");
-  keys.unshift("State District Name")
+//   keys = keys.filter(item => item != "State District Name");
+//   keys.unshift("State District Name")
 
-  let columns = keys.map(field => ({field}));
+//   let columns = keys.map(field => ({field}));
 
-  columns.forEach(function(e) {
+//   columns.forEach(function(e) {
 
-     if (e.field == "State District Name") {
-        e.valueFormatter = "";
-        e.resizable = false;
-        e.autoHeight = true;
-        e.wrapText = true;
-        e.minWidth = 200;
-        e.maxWidth = 200;
-        e.cellClass = "ag-left-aligned-cell";
-        e.headerClass = "text-center";
-      } else if (e.field == "Allocation Year") {
-        e.valueFormatter = blankFormatter;
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     } else if (e.field == "Title I Allocation") {
-        e.valueFormatter = moneyFormatter;
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     }
-     else {
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     }
-  });
+//      if (e.field == "State District Name") {
+//         e.valueFormatter = "";
+//         e.resizable = false;
+//         e.autoHeight = true;
+//         e.wrapText = true;
+//         e.minWidth = 200;
+//         e.maxWidth = 200;
+//         e.cellClass = "ag-left-aligned-cell";
+//         e.headerClass = "text-center";
+//       } else if (e.field == "Allocation Year") {
+//         e.valueFormatter = blankFormatter;
+//         e.flex = 1;
+//         e.resizable = false;
+//         e.cellClass = "ag-center-aligned-cell";
+//         e.headerClass = "text-center";
+//      } else if (e.field == "Title I Allocation") {
+//         e.valueFormatter = moneyFormatter;
+//         e.flex = 1;
+//         e.resizable = false;
+//         e.cellClass = "ag-center-aligned-cell";
+//         e.headerClass = "text-center";
+//      }
+//      else {
+//         e.flex = 1;
+//         e.resizable = false;
+//         e.cellClass = "ag-center-aligned-cell";
+//         e.headerClass = "text-center";
+//      }
+//   });
 
-  let options = {
-     columnDefs: columns,
-     rowData: data,
-     gridId: tableID,
-     tooltipShowDelay: 0,
-     enableBrowserTooltips: false
-  };
-  return options
-};
+//   let options = {
+//      columnDefs: columns,
+//      onRowClicked: function (e) {
+//       const school = e.data["State District Name"];
+//       document.getElementById('store').value = school;
+//       console.log(document.getElementById('store').value)
+//       getDistrictData(school);
+//       },
+//      rowData: data,
+//      gridId: tableID,
+//      tooltipShowDelay: 0,
+//      enableBrowserTooltips: false
+//   };
+//   return options
+// };

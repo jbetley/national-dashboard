@@ -4,38 +4,6 @@
 // date:     03.22.25 
 
 
-
-// converts lower/upper case strings to title case
-function proper(str) {
-  let upper = true
-  let newStr = ""
-  for (let i = 0, l = str.length; i < l; i++) {
-      // Note that you can also check for all kinds of spaces  with
-      // str[i].match(/\s/)
-      if (str[i] == " ") {
-          upper = true
-          newStr += str[i]
-          continue
-      }
-      newStr += upper ? str[i].toUpperCase() : str[i].toLowerCase()
-      upper = false
-  }
-  return newStr
-}
-
-
-// format raw phone number string (keeps "+1" international
-// prefix if exists)
-function formatPhoneNumber(phoneNumberString) {
-  var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
-  var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
-  if (match) {
-    var intlCode = (match[1] ? '+1 ' : '');
-    return [intlCode, '(', match[2], ') ', match[3], '-', match[4]].join('');
-  }
-  return null;
-}
-
 // split object into two objects at passed index
 // use: const [firstPart, secondPart] = splitObject(data, 6);
 function splitObject(obj, index) {
