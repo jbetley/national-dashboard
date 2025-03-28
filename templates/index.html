@@ -50,6 +50,7 @@
          <section id="table">
             <div class="grid">
                <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header-sm"></div></div>
+               <!-- <div class="button-box"><div id="back-button">Back to Full List</div></div> -->
                <div class="table-box state-table" id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
             </div>  
          </section>
@@ -68,7 +69,7 @@ const allStatesResponse = await fetch(allStatesUrl);
 var allStatesObj = await allStatesResponse.json();
 
 var tableGridApi;
-
+var selectedRow;
 
 async function getStateData(select) {
    const data = await fetch(`${window.origin}/states`, {
@@ -113,6 +114,7 @@ async function getAllDistrictData(select) {
 };
 
 async function getSingleDistrictData(select) {
+   selectedRow = select;
    const data = await fetch(`${window.origin}/district`, {
       method: "POST",
          credentials: "include",
@@ -129,7 +131,7 @@ async function getSingleDistrictData(select) {
             alert("Network Error: Could not load data.")
          }
    });
-   displayDistrictData(data);
+   displaySingleDistrictData(data);
 };
 
 
@@ -263,18 +265,15 @@ async function displayStateData(data) {
 
 async function displayDistrictData(data) {
 
-   console.log("DISPLA")
-
    const districtName = districtSelection.options[districtSelection.selectedIndex].text;
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = districtName + " Overview";
    
    let districtData;
-   console.log(data.length)
+
    if (data.length > 1) {
 
-      // District Static-Info Tables
       districtData = data.filter(
          val => val["State District Name"].includes(districtSelection.value)
       );
@@ -282,9 +281,6 @@ async function displayDistrictData(data) {
    else {
       districtData = data;
    }
-
-// TODO: SINGLE DISTRICT IS CAUSING TABLE TO BE SINGLE DISTRICT,
-// EITHER DO BACK BUTTON OR CREATE DIFFERENT DISPLAY DISTRICT DATA FUNC
 
    districtInfoTable(districtData[0], "district-info-table");
 
@@ -314,13 +310,27 @@ async function displayDistrictData(data) {
    }
 };
 
+
+async function displaySingleDistrictData(data) {
+
+   let districtLabel = document.getElementById("container-district-label");
+   districtLabel.firstChild.textContent = selectedRow + " Overview";
+
+   console.log(districtSelection)
+   districtSelection.value = selectedRow;
+
+   districtInfoTable(data[0], "district-info-table");
+};
+
+
 /* Initialize App */
 // Preload all charts on all tabs on first load
 if (document.readyState !== "loading") {
 
-   await setStateList()
-   await getStateData(stateSelection.value);
+await setStateList()
+await getStateData(stateSelection.value);
 
 };
+
 </script>
 </html>

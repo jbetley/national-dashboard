@@ -4,7 +4,7 @@
 ############################################
 # author:   jbetley (https://github.com/jbetley)
 # version:  0.9  # noqa: ERA001
-# date:     03/22/25
+# date:     03/27/25
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -107,7 +107,6 @@ def get_state_data(state_id):
 
     params = {"id": state_id}
 
-    # School demographic and attendance data
     w = text(
         """
         SELECT *

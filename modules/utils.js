@@ -1,7 +1,39 @@
 // general utility functions
 // author:   jbetley (https://github.com/jbetley)
 // version:  1.0
-// date:     03.22.25 
+// date:     03.27.25 
+
+
+// format raw phone number string (keeps '+1' international
+// prefix if exists)
+function formatPhoneNumber(phoneNumberString) {
+  var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+  var match = cleaned.match(/^(1|)?(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    var intlCode = (match[1] ? '+1 ' : '');
+    return [intlCode, '(', match[2], ') ', match[3], '-', match[4]].join('');
+  }
+  return null;
+};
+
+
+// converts lower/upper case strings to title case
+function proper(str) {
+  let upper = true
+  let newStr = ''
+  for (let i = 0, l = str.length; i < l; i++) {
+      // Note that you can also check for all kinds of spaces  with
+      // str[i].match(/\s/)
+      if (str[i] == ' ') {
+          upper = true
+          newStr += str[i]
+          continue
+      }
+      newStr += upper ? str[i].toUpperCase() : str[i].toLowerCase()
+      upper = false
+  }
+  return newStr
+};
 
 
 // split object into two objects at passed index
@@ -50,7 +82,7 @@ function removeSubstringFromKeys(obj, substring) {
 }
 
 
-// remove "n" elements from the front of an array
+// remove 'n' elements from the front of an array
 const dropElements = (arr, n = 1) => arr.slice(n);
 
 
@@ -66,7 +98,7 @@ function toString(o) {
 };
 
 
-// filter an array of objects by the keys listed in "keep"
+// filter an array of objects by the keys listed in 'keep'
 function filterObj(list, kept) {
   return list.map(o => Object.fromEntries(kept.map(k => [k, o[k]])))
 };
@@ -98,7 +130,7 @@ function filterByValue(array, string) {
 
 
 // returns true if all objects within an array have less than
-// "threshold" keys
+// 'threshold' keys
 function areAllObjectKeysLessThan(arr, threshold) {
   return arr.every(obj => Object.keys(obj).length < threshold);
 }
@@ -139,7 +171,7 @@ function scrapeNumbers(arr) {
 // convert 4 digit year to six digit (2024 -> 2023-24)
 function longYear(year) {
   let prevYear = Number(year) - 1;
-  let fullYear = toString(prevYear) + "-" + year.slice(2);
+  let fullYear = toString(prevYear) + '-' + year.slice(2);
   return fullYear
 };
 
@@ -163,7 +195,7 @@ function isValid(obj) {
 
 
 // pass a (single) object and a list of keys - will return
-// "true" if object contains any of the keys in the list
+// 'true' if object contains any of the keys in the list
 function containsAnyKey(obj, keys) {
   for (const key of keys) {
     if (obj.hasOwnProperty(key)) {
@@ -220,8 +252,8 @@ function orderByProperty(arr, property, order) {
 };
 
 
-// replace the first duplicate value in the passed "obj"
-// with the passed "newValue"
+// replace the first duplicate value in the passed 'obj'
+// with the passed 'newValue'
 function replaceDuplicate(obj, newValue) {
   const seenValues = {};
   for (const key in obj) {
