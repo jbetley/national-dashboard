@@ -1,4 +1,9 @@
-/* State and District Information Dashboard */
+/* State and District Information Dashboard
+  stylesheet
+  author:   jbetley (https://github.com/jbetley)
+  version:  0.9
+  date:     03/27/25
+*/
 
 html, html a {
   -webkit-font-smoothing: antialiased;
@@ -11,7 +16,6 @@ body {
   color: steelblue;
   font-family: 'Inter', sans-serif;
   min-width: fit-content;
-  /* width: 100%; */
 /*  overflow-y: scroll; /* always show scrollbar to prevent pixel shift when changing tabs */
   margin: 5px;
   background-color: #F2F2F2;
@@ -47,6 +51,7 @@ svg {
   padding-top: 5px;
   width: 80%;
   border-radius: 5px;
+  margin-bottom: 20px;
 }
 
 .label__header-sm {
@@ -267,46 +272,66 @@ select:focus {
 
 
 /* Grid */
-section {
+/* section {
   margin-top: -0.6em;
+} */
+
+/* GRID TEST */
+
+.parent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
 }
 
-section#state .grid {
-  display: grid;
+/* .div1 { grid-area: 1 / 1 / 2 / 2; }
+.div2 { grid-area: 1 / 2 / 2 / 3; }
+.div3 { grid-area: 2 / 1 / 3 / 3; } */
+
+/* section#state .grid { */
+.state-grid {  
+  grid-area: 1 / 1 / span 1 / span 1;
+  /* display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr); */
   margin: 1em;
   grid-gap: .5em;
 }
-.state-info {
+/* .state-info {
   grid-column: 1 / span 1;
-}
+} */
 
-section#district .grid {
-  display: grid;
+.district-grid {  
+/* section#district .grid { */
+  grid-area: 1 / 2 / span 1 / span 1;
+  /* display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr); */
   margin: 1em;
   grid-gap: .5em;
 }
-.district-info {
+/* .district-info {
   grid-column: 1 / span 1;
-}
+} */
 
-section#table .grid {
-  display: grid;
+.table-grid {  
+/* section#table .grid { */
+  grid-area: 2 / 1 / span 1 / span 2;
+  /* grid-area: 2 / 1 / 1 / 2; */
+  /* display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr); */
   margin: 1em;
   grid-gap: .5em;
 }
-.first-table-1 {
+/* .first-table-1 {
   grid-column: 1 / span 1;
-}
-
+} */
 
 /* Containers */
-.box {
+/* .box {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -319,11 +344,11 @@ section#table .grid {
   background-color: #fff;
   padding: 35px;
   max-width: fit-content;
-}
+} */
 
 .table-box {
   display: -webkit-box;
-  min-width: 290px;
+  /* min-width: 290px; */
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: center;
@@ -351,12 +376,12 @@ section#table .grid {
   align-items: center;
   border-radius: .5em;
   background-color: #fff;
-  height: 120px;
+  /* height: 220px; */
 }
 
 .district-box {
   display: -webkit-box;
-  min-width: 290px;
+  /* min-width: 290px; */
   display: -ms-flexbox;
   display: flex;
   -webkit-box-pack: center;
@@ -368,7 +393,7 @@ section#table .grid {
   align-items: center;
   border-radius: .5em;
   background-color: #fff;
-  height: 120px;
+  /* height: 220px; */
 }
 
 #state-info-table {
@@ -425,7 +450,7 @@ section#table .grid {
   padding: 5px;
   font-family: 'Inter', sans-serif;
   color: steelblue;
-  background-color: #e9e9eb;
+  /* background-color: #e9e9eb; */
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
@@ -472,24 +497,20 @@ section#table .grid {
   line-height: 15px !important;
   word-break: normal; /* prevent words from breaking */
 }
-
 .ag-theme-quartz .ag-row-odd {
   background-color: var(--ag-odd-row-background-color);
 }
-
 .ag-center-aligned-cell-with-border {
   display: flex;
   justify-content: center;
   align-items: center;
   border-right: 1px solid steelblue !important;
 }
-
 .ag-center-aligned-cell {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .ag-left-aligned-cell {
   display: flex;
   align-items: center;

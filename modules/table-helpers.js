@@ -154,6 +154,8 @@ function allocationsTable(object, id) {
    allocationsTableDiv.appendChild(table);
 };
 
+
+
 function districtInfoTable(data, id) {
 
    let districtInfoTableDiv = document.getElementById(id);
@@ -170,103 +172,181 @@ function districtInfoTable(data, id) {
       var tr = document.createElement('TR');
       tableBody.appendChild(tr);
 
-      for (var col = 0; col < 5; col++) {
+      for (var col = 0; col < 2; col++) {
 
          var td = document.createElement('TD');
          
          if (col == 0) {
             td.width = '200';
-         } else if (col == 1) {
-            td.width = '175';
-         } else if (col == 2) {
-            td.width = '10'
-         } else if (col == 3) {
-            td.width = '150'
+         // } else if (col == 1) {
+         //    td.width = '175';
+         // } else if (col == 2) {
+         //    td.width = '10'
+         // } else if (col == 3) {
+         //    td.width = '150'
          } else {
-            td.width = '175'
-         }
+            td.width = '300'
+         };
          
          td.height = '10';
 
          if (row==0) {
             if (col==0) {
-               td.appendChild(document.createTextNode('Address'));
-            } else if (col==1) {
-               td.appendChild(document.createTextNode(proper(data['Address'])));
-            }
-            else if (col==2) {
-               td.appendChild(document.createTextNode(''));
-            }
-            else if (col==3) {
-               td.appendChild(document.createTextNode('NCES District Name'));
-            }
-            else {
-               td.appendChild(document.createTextNode(proper(data['NCES District Name'])));
+               td.appendChild(document.createTextNode('District:'));
+            } else  {
+               const nameID = data['State District Name'] + " (ID: " + data['State District ID'] + ")";
+               td.appendChild(document.createTextNode(nameID));
             }
          }
          else if (row==1) {
             if (col==0) {
-               td.appendChild(document.createTextNode(''));
-            } else if (col==1) {
-               td.appendChild(document.createTextNode(
-                  proper(data['City']) + ', ' + data['State'] + '  ' + data['ZIP']
+               td.appendChild(document.createTextNode('Address:'));
+            } else {
+               td.appendChild(document.createTextNode(proper(data['Address'])
                ));
-            }  else if (col==2) {
-               td.appendChild(document.createTextNode(''));
-            }
-            else if (col==3) {
-               td.appendChild(document.createTextNode('NCES District ID'));
-            }
-            else {
-               td.appendChild(document.createTextNode(data['NCES ID']));
             }
          }
          else if (row==2) {
             if (col==0) {
-               const prettyNumber = formatPhoneNumber(data['Phone Number']);
-               td.appendChild(document.createTextNode(prettyNumber));
-            }
-            else if (col==1) {
-               td.appendChild(document.createTextNode(data['Phone Number']));
-            } else if (col==2) {
                td.appendChild(document.createTextNode(''));
-            } else if (col==3) {
-               td.appendChild(document.createTextNode('State District Name'));
             }
             else {
-               td.appendChild(document.createTextNode(data['State District Name']));
+               td.appendChild(document.createTextNode(
+                  proper(data['City']) + ', ' + data['State'] + '  ' + data['ZIP']
+               ));
             }
          }
          else if (row == 3) {
             if (col==0) {
-               td.appendChild(document.createTextNode('# of Traditional Public Schools'));
-            } else if (col==1) {
-               td.appendChild(document.createTextNode(data['Number Public Schools']));
-            }  else if (col==2) {
-               td.appendChild(document.createTextNode(''));
-            }
-            else if (col==3) {
-               td.appendChild(document.createTextNode('State District ID'));
-            }
-            else {
-               td.appendChild(document.createTextNode(data['State District ID']));
+               td.appendChild(document.createTextNode('Phone Number:'));
+
+            } else {
+               const prettyNumber = formatPhoneNumber(data['Phone Number']);
+               td.appendChild(document.createTextNode(prettyNumber));
             }
          }
          else if (row == 4) {
             if (col==0) {
-               td.appendChild(document.createTextNode('# of Traditional Charter Schools'));
-            } else if (col==1) {
-               td.appendChild(document.createTextNode(data['Number Charter Schools']));
+               td.appendChild(document.createTextNode('Traditional / Charter Schools:'));
+            } else {
+               const schoolNums = data['Number Public Schools'] + " / " + data['Number Charter Schools'];
+               td.appendChild(document.createTextNode(schoolNums));
             }  
-            else {
-               td.appendChild(document.createTextNode(''));
-            }
          }
          tr.appendChild(td);
       }
    }
    districtInfoTableDiv.appendChild(table);
 };
+
+// function districtInfoTable(data, id) {
+
+//    let districtInfoTableDiv = document.getElementById(id);
+
+//    districtInfoTableDiv.innerHTML = '';
+
+//    var table = document.createElement('TABLE');
+//    table.border = '0';
+
+//    var tableBody = document.createElement('TBODY');
+//    table.appendChild(tableBody);
+
+//    for (var row = 0; row < 5; row++) {
+//       var tr = document.createElement('TR');
+//       tableBody.appendChild(tr);
+
+//       for (var col = 0; col < 5; col++) {
+
+//          var td = document.createElement('TD');
+         
+//          if (col == 0) {
+//             td.width = '200';
+//          } else if (col == 1) {
+//             td.width = '175';
+//          } else if (col == 2) {
+//             td.width = '10'
+//          } else if (col == 3) {
+//             td.width = '150'
+//          } else {
+//             td.width = '175'
+//          }
+         
+//          td.height = '10';
+
+//          if (row==0) {
+//             if (col==0) {
+//                td.appendChild(document.createTextNode('Address'));
+//             } else if (col==1) {
+//                td.appendChild(document.createTextNode(proper(data['Address'])));
+//             }
+//             else if (col==2) {
+//                td.appendChild(document.createTextNode(''));
+//             }
+//          }
+//          else if (row==1) {
+//             if (col==0) {
+//                td.appendChild(document.createTextNode(''));
+//             } else if (col==1) {
+//                td.appendChild(document.createTextNode(
+//                   proper(data['City']) + ', ' + data['State'] + '  ' + data['ZIP']
+//                ));
+//             }  else if (col==2) {
+//                td.appendChild(document.createTextNode(''));
+//             }
+//             else if (col==3) {
+//                td.appendChild(document.createTextNode('NCES District ID'));
+//             }
+//             else {
+//                td.appendChild(document.createTextNode(data['NCES ID']));
+//             }
+//          }
+//          else if (row==2) {
+//             if (col==0) {
+//                td.appendChild(document.createTextNode('Phone Number'));
+//             }
+//             else if (col==1) {
+
+//                const prettyNumber = formatPhoneNumber(data['Phone Number']);
+//                td.appendChild(document.createTextNode(prettyNumber));
+//             } else if (col==2) {
+//                td.appendChild(document.createTextNode(''));
+//             } else if (col==3) {
+//                td.appendChild(document.createTextNode('State District Name'));
+//             }
+//             else {
+//                td.appendChild(document.createTextNode(data['State District Name']));
+//             }
+//          }
+//          else if (row == 3) {
+//             if (col==0) {
+//                td.appendChild(document.createTextNode('# of Traditional Public Schools'));
+//             } else if (col==1) {
+//                td.appendChild(document.createTextNode(data['Number Public Schools']));
+//             }  else if (col==2) {
+//                td.appendChild(document.createTextNode(''));
+//             }
+//             else if (col==3) {
+//                td.appendChild(document.createTextNode('State District ID'));
+//             }
+//             else {
+//                td.appendChild(document.createTextNode(data['State District ID']));
+//             }
+//          }
+//          else if (row == 4) {
+//             if (col==0) {
+//                td.appendChild(document.createTextNode('# of Traditional Charter Schools'));
+//             } else if (col==1) {
+//                td.appendChild(document.createTextNode(data['Number Charter Schools']));
+//             }  
+//             else {
+//                td.appendChild(document.createTextNode(''));
+//             }
+//          }
+//          tr.appendChild(td);
+//       }
+//    }
+//    districtInfoTableDiv.appendChild(table);
+// };
 
 
 function moneyFormatter(params) {

@@ -30,7 +30,33 @@
    </form>
    <div class="row">
       <div class="panel-container">
-         <section id="state">
+         <div class="parent">
+            <div class="state-grid">
+               <!-- <div class="grid"> -->
+            <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
+            <div class="state-box state-info" id="container-state-info">
+               <div class="state-table-1" id="state-info-table-1"> </div>
+               <div id="state-info-table-2" class="state-table-2"></div>
+            </div>
+         <!-- </div>   -->
+      </div>
+      <div class="district-grid">
+         <!-- <div class="grid"> -->
+            <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header"></div></div>
+            <div class="district-box district-info" id="container-district-info">
+               <div class="district-table" id="district-info-table"></div>
+            </div>
+         <!-- </div>   -->
+      </div>
+      <div class="table-grid">
+         <!-- <div class="grid"> -->
+            <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header"></div></div>     
+            <div class="table-box state-table"  id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+         <!-- </div> -->
+      </div>
+</div> 
+
+         <!-- <section id="state">
             <div class="grid">
                <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
                <div class="state-box state-info" id="container-state-info">
@@ -50,10 +76,9 @@
          <section id="table">
             <div class="grid">
                <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header-sm"></div></div>
-               <!-- <div class="button-box"><div id="back-button">Back to Full List</div></div> -->
                <div class="table-box state-table" id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
             </div>  
-         </section>
+         </section> -->
       </div>  
    </div>
 </body>
@@ -62,7 +87,7 @@
 // National State and School District Info
 // author:   jbetley (https://github.com/jbetley)
 // version:  0.9
-// date:     03.22.25
+// date:     03.27.25
 
 const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
@@ -112,6 +137,7 @@ async function getAllDistrictData(select) {
    });
    displayDistrictData(data);
 };
+
 
 async function getSingleDistrictData(select) {
    selectedRow = select;
@@ -177,59 +203,59 @@ async function setDistrictList() {
 // NOTE: This needs to be in index.html so getSingleDistrictData()
 // is in scope
 function createStateTable(data, tableID) {
-  let keys = Object.keys(data.reduce(function(result, obj) {
-     return Object.assign(result, obj);
-  }, {}));
+   let keys = Object.keys(data.reduce(function(result, obj) {
+      return Object.assign(result, obj);
+   }, {}));
 
-  keys = keys.filter(item => item != "State District Name");
-  keys.unshift("State District Name")
+   keys = keys.filter(item => item != "State District Name");
+   keys.unshift("State District Name")
 
-  let columns = keys.map(field => ({field}));
+   let columns = keys.map(field => ({field}));
 
-  columns.forEach(function(e) {
+   columns.forEach(function(e) {
 
-     if (e.field == "State District Name") {
-        e.valueFormatter = "";
-        e.resizable = false;
-        e.autoHeight = true;
-        e.wrapText = true;
-        e.minWidth = 200;
-        e.maxWidth = 200;
-        e.cellClass = "ag-left-aligned-cell";
-        e.headerClass = "text-center";
+      if (e.field == "State District Name") {
+         e.valueFormatter = "";
+         e.resizable = false;
+         e.autoHeight = true;
+         e.wrapText = true;
+         e.minWidth = 200;
+         e.maxWidth = 200;
+         e.cellClass = "ag-left-aligned-cell";
+         e.headerClass = "text-center";
       } else if (e.field == "Allocation Year") {
-        e.valueFormatter = blankFormatter;
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     } else if (e.field == "Title I Allocation") {
-        e.valueFormatter = moneyFormatter;
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     }
-     else {
-        e.flex = 1;
-        e.resizable = false;
-        e.cellClass = "ag-center-aligned-cell";
-        e.headerClass = "text-center";
-     }
-  });
+         e.valueFormatter = blankFormatter;
+         e.flex = 1;
+         e.resizable = false;
+         e.cellClass = "ag-center-aligned-cell";
+         e.headerClass = "text-center";
+      } else if (e.field == "Title I Allocation") {
+         e.valueFormatter = moneyFormatter;
+         e.flex = 1;
+         e.resizable = false;
+         e.cellClass = "ag-center-aligned-cell";
+         e.headerClass = "text-center";
+      }
+      else {
+         e.flex = 1;
+         e.resizable = false;
+         e.cellClass = "ag-center-aligned-cell";
+         e.headerClass = "text-center";
+      }
+   });
 
-  let options = {
-     columnDefs: columns,
-     onRowClicked: function (e) {
-      const school = e.data["State District Name"];
-      getSingleDistrictData(school);
+   let options = {
+      columnDefs: columns,
+      onRowClicked: function (e) {
+         const school = e.data["State District Name"];
+         getSingleDistrictData(school);
       },
-     rowData: data,
-     gridId: tableID,
-     tooltipShowDelay: 0,
-     enableBrowserTooltips: false
-  };
-  return options
+      rowData: data,
+      gridId: tableID,
+      tooltipShowDelay: 0,
+      enableBrowserTooltips: false
+   };
+   return options
 };
 
 
@@ -249,7 +275,6 @@ districtSelection.addEventListener("change", async () => {
 
 
 async function displayStateData(data) {
-
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let stateLabel = document.getElementById("container-state-label");
    stateLabel.firstChild.textContent = stateName + " Overview";
@@ -286,7 +311,8 @@ async function displayDistrictData(data) {
 
    // District Ag-Grid Table
    let tableLabel = document.getElementById("container-table-label");
-   tableLabel.firstChild.textContent = stateName +  " School Districts";
+   // tableLabel.firstChild.textContent = stateName +  " School Districts";
+   tableLabel.firstChild.textContent = "School District List";
 
    // remove unused columns
    let kept = ["State District ID", "State District Name", "Allocation Year", "Title I Allocation"];
@@ -316,7 +342,6 @@ async function displaySingleDistrictData(data) {
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = selectedRow + " Overview";
 
-   console.log(districtSelection)
    districtSelection.value = selectedRow;
 
    districtInfoTable(data[0], "district-info-table");
