@@ -5,6 +5,41 @@
 // date:     03/27/25
 
 
+// div fade out/in; duration is ms; default is fade out,
+// set fadeOut to false to fade in
+function fadeDiv(element, duration, fadeOut = true) {
+   let startTime;
+   const startOpacity = fadeOut ? 1 : 0;
+   const endOpacity = fadeOut ? 0 : 1;
+
+   function animate(currentTime) {
+      if (!startTime) {
+         startTime = currentTime;
+      }
+
+      const elapsed = currentTime - startTime;
+      let progress = elapsed / duration;
+
+      if (progress > 1) {
+         progress = 1;
+      }
+
+      const opacity = startOpacity + (endOpacity - startOpacity) * progress;
+      element.style.opacity = opacity;
+
+      if (progress < 1) {
+         requestAnimationFrame(animate);
+      } else if (fadeOut) {
+         element.style.display = 'none';
+      }
+   }
+
+   if (!fadeOut) {
+      element.style.display = 'block';
+   }
+   requestAnimationFrame(animate);
+};
+
 
 function stateInfoTable(data, id) {
 
@@ -86,7 +121,6 @@ function stateInfoTable(data, id) {
 };
 
 
-
 function allocationsTable(object, id) {
 
    // get title year & strip from string
@@ -155,10 +189,12 @@ function allocationsTable(object, id) {
 };
 
 
-
 function districtInfoTable(data, id) {
 
    let districtInfoTableDiv = document.getElementById(id);
+   console.log("CALLED DISTRICT INFO TABLE")
+   //fade out (ms)
+   fadeDiv(districtInfoTableDiv, 500);
 
    districtInfoTableDiv.innerHTML = '';
 
@@ -227,7 +263,14 @@ function districtInfoTable(data, id) {
          tr.appendChild(td);
       }
    }
-   districtInfoTableDiv.appendChild(table);
+   // districtInfoTableDiv.appendChild(table);
+   
+   // fade in 
+   setTimeout(() => {
+      console.log("FADE IN")
+      districtInfoTableDiv.appendChild(table);
+      fadeDiv(districtInfoTableDiv, 500, false);
+      }, 50);
 };
 
 

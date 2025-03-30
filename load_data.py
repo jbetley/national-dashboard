@@ -98,7 +98,7 @@ def get_single_district_data(school_name):
 
     district_data = run_query(w, params)
 
-    district_data = district_data.sort_values(by="Title I", ascending=False)
+    # district_data = district_data.sort_values(by="Title I", ascending=False)
 
     return district_data.reset_index(drop=True)
 
@@ -117,6 +117,6 @@ def get_state_data(state_id):
 
     state_data = run_query(w, params)
 
-    state_data = state_data.sort_values(by="2024 Title I Allocation", ascending=False)
+    # state_data = state_data.sort_values(by="2024 Title I Allocation", ascending=False)
 
     return state_data.reset_index(drop=True)
