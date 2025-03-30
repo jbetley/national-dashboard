@@ -229,7 +229,7 @@ function createStateTable(data, tableID) {
          e.resizable = false;
          e.cellClass = "ag-center-aligned-cell";
          e.headerClass = "text-center";
-      } else if (e.field == "Title I Allocation") {
+      } else if (e.field.includes("Title")) {
          e.valueFormatter = moneyFormatter;
          e.flex = 1;
          e.resizable = false;
@@ -267,8 +267,8 @@ stateSelection.addEventListener("change", async () => {
    getAllDistrictData(stateSelection.value);
 });
 
-var districtSelection = document.getElementById("districtSelect");
 
+var districtSelection = document.getElementById("districtSelect");
 districtSelection.addEventListener("change", async () => {
    getAllDistrictData(stateSelection.value);
 });
@@ -290,6 +290,8 @@ async function displayStateData(data) {
 
 async function displayDistrictData(data) {
 
+   console.log("HERE")
+   console.log(data)
    const districtName = districtSelection.options[districtSelection.selectedIndex].text;
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let districtLabel = document.getElementById("container-district-label");
@@ -311,11 +313,13 @@ async function displayDistrictData(data) {
 
    // District Ag-Grid Table
    let tableLabel = document.getElementById("container-table-label");
-   // tableLabel.firstChild.textContent = stateName +  " School Districts";
    tableLabel.firstChild.textContent = "School District List";
 
    // remove unused columns
-   let kept = ["State District ID", "State District Name", "Allocation Year", "Title I Allocation"];
+   let kept = [
+      "State District ID", "State District Name", "Allocation Year", "Title I",
+      "Title II", "Title III", "Title IV", "Title V"
+   ];
    let tabledata = filterObj(data, kept);
 
    let tableOptions = createStateTable(tabledata,"stateTable");

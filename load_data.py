@@ -3,8 +3,8 @@
 # Database Queries (SQLite)                #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  0.9  # noqa: ERA001
-# date:     03/27/25
+# version:  1.0  # noqa: ERA001
+# date:     03/29/25
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -78,8 +78,8 @@ def get_all_district_data(state_id):
     )
 
     district_data = run_query(w, params)
-
-    district_data = district_data.sort_values(by="Title I Allocation", ascending=False)
+    
+    district_data = district_data.sort_values(by="Title I", ascending=False)
 
     return district_data.reset_index(drop=True)
 
@@ -98,7 +98,7 @@ def get_single_district_data(school_name):
 
     district_data = run_query(w, params)
 
-    district_data = district_data.sort_values(by="Title I Allocation", ascending=False)
+    district_data = district_data.sort_values(by="Title I", ascending=False)
 
     return district_data.reset_index(drop=True)
 

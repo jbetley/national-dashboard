@@ -179,10 +179,6 @@ function districtInfoTable(data, id) {
          if (col == 0) {
             td.width = '125';
          }
-         // else {
-         //    td.width = '300'
-         // };
-
          td.height = '10';
 
          if (row==0) {
@@ -240,7 +236,8 @@ function moneyFormatter(params) {
       return '\u2014'
    }
    else {
-      var sansDec = params.value.toFixed(2);
+      const val = parseFloat(params.value)
+      var sansDec = val.toFixed(2);
       var formatted = sansDec.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return '$ '+ `${formatted}`;
    }

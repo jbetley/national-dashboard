@@ -3,8 +3,8 @@
 # main application & backend               #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  0.9  # noqa: ERA001
-# date:     03/27/25
+# version:  1.0  # noqa: ERA001
+# date:     03/29/25
 
 # NOTE: Do a global replace "app" with "application" before loading
 # to server. also rename app.py to application.py
@@ -27,12 +27,6 @@ app = Flask(__name__, static_folder="./modules")
 load_dotenv()
 app.secret_key = os.environ.get('SECRET_KEY')
 PASSWORD_HASH = os.environ.get('PASSWORD_HASH')
-
-# if not PASSWORD_HASH:
-#     password = "oroonoko"
-#     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-#     PASSWORD_HASH = hashed_password.decode('utf-8')
-
 
 def check_auth(password):
     """Checks if the provided password matches the stored hash."""
