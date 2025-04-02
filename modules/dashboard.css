@@ -272,12 +272,6 @@ select:focus {
 
 
 /* Grid */
-/* section {
-  margin-top: -0.6em;
-} */
-
-/* GRID TEST */
-
 .parent {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -286,8 +280,6 @@ select:focus {
   grid-row-gap: 0px;
 }
 
-
-/* section#state .grid { */
 .state-grid {  
   grid-area: 1 / 1 / span 1 / span 3;
   margin: 1em;
@@ -301,14 +293,12 @@ select:focus {
 }
 
 .table-grid {  
-/* section#table .grid { */
   grid-area: 2 / 1 / span 1 / span 5;
   margin: 1em;
   grid-gap: .5em;
 }
 
 /* Containers */
-
 .table-box {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -358,6 +348,18 @@ select:focus {
   background-color: #fff;
 }
 
+.empty-box {
+  height: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tables */
 #state-info-table {
   display: flex;
 }
@@ -376,37 +378,68 @@ select:focus {
 .state-table-1 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
+  margin-top: -20px;
   height: 120px;
-  /* background-color: #e9e9eb; */
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
-  margin-right: 25px;
+  margin-right: 5px;
+  position: relative;
+}
+
+.state-table-1 > .table-title {
+  top: 0; 
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
 .state-table-1 td:first-child {
-  font-weight: 600;
+  font-weight: 500;
+}
+
+.state-table-1::after {
+  content: "";
+  position: absolute;
+  width: .5px;
+  right: 3%;
+  height: 100%;
+  background: black;
+  top: 20%;
+  transform: translate(0%, -10%);
 }
 
 .state-table-2 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
+  margin-top: -20px;
   height: 120px;
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
+  position: relative;
 }
+
+.state-table-2 > .table-title {
+  top: 0; 
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
 .state-table-2 td {
-  text-align: center; 
-  vertical-align: top; /* here */
+  text-align: center;
+  vertical-align: top;
 }
 
 .state-table-2 td:first-child {
   text-align: left; 
-  font-weight: 600;
+  font-weight: 500;
 }
 .state-table-2 tr:first-child {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .district-table {
@@ -416,26 +449,14 @@ select:focus {
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
-  /* margin-right: 25px; */
 }
 
 .district-table td:first-child {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .district-table td:nth-child(4) {
-  font-weight: 600;
-}
-
-.empty-box {
-  height: 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  align-items: center;
+  font-weight: 500;
 }
 
 /* Ag Grid */

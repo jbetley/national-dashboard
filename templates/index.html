@@ -35,8 +35,14 @@
                <!-- <div class="grid"> -->
             <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
             <div class="state-box state-info" id="container-state-info">
-               <div class="state-table-1" id="state-info-table-1"> </div>
-               <div id="state-info-table-2" class="state-table-2"></div>
+               <div class="state-table-1">
+                  <div class="table-title" id="table-1-title"></div>
+                  <div id="state-info-table-1"></div>
+               </div>
+               <div class="state-table-2">
+                  <div class="table-title" id="table-2-title"></div>
+                  <div id="state-info-table-2"></div>
+               </div>
             </div>
          <!-- </div>   -->
       </div>
@@ -181,20 +187,43 @@ async function setStateList() {
 
 
 async function setDistrictList() {
-   const stateDistricts = allStatesObj.filter(
+   let stateDistricts = allStatesObj.filter(
       val => val["State Abbreviation"].includes(stateSelection.value)
    );
 
-   const districtObj = stateDistricts.map(obj => ({ name: obj["State District Name"]}));
+   function sortObjectsByNumberWithBlanksToEnd(arr, property) {
+      arr.sort((a, b) => {
+         const aValue = a[property];
+         const bValue = b[property];
+         if ((aValue === null || aValue === undefined || aValue === '') && (bValue !== null && bValue !== undefined && bValue !== '')) {
+            return 1; 
+         }
+         if ((bValue === null || bValue === undefined || bValue === '') && (aValue !== null && aValue !== undefined && aValue !== '')) {
+            return -1;
+         }
+         
+         return (bValue || 0) - (aValue || 0);
+      });
+      return arr;
+   }
+
+   // NOTE: we want list sorted alphabetically, except for default, which we
+   // want to be the school with the highest Title I Allocation (the
+   // DistrictTitleTable order is sorted by Title I Allocation)
+   let sortedDistricts = sortObjectsByNumberWithBlanksToEnd(stateDistricts, "Title I");
+
+   const highest = sortedDistricts.shift();
+
+   sortedDistricts.sort((a, b) => a["State District Name"].toLowerCase() > b["State District Name"].toLowerCase() ? 1 : -1);
+   const districtObj = sortedDistricts.map(obj => ({ name: obj["State District Name"]}));
 
    // a different way to get unique values (see setStateList)
    let districtDropdown = Array.from(
       new Set(districtObj.map(o => JSON.stringify(o)))).map(str => JSON.parse(str)
    );
 
-   // sort alphabetically (NOTE: dropdown order is different than DistrictTitleTable
-   // order which is sorted by Title I Allocation)
-   districtDropdown.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+   // add district with highest Title I value to top of array
+   districtDropdown.splice(0, 0, {name: highest["State District Name"]});
 
    // clear existing options
    removeOptions(districtSelection);
@@ -270,9 +299,8 @@ var stateSelection = document.getElementById("stateSelect");
 stateSelection.addEventListener("change", async () => {
    await setDistrictList();
    await getStateData(stateSelection.value);
-   await displayStateInfoTables(stateSelection.value)
+   await getSingleDistrictData(districtSelection.value);
 });
-
 
 var districtSelection = document.getElementById("districtSelect");
 districtSelection.addEventListener("change", async () => {
@@ -281,12 +309,19 @@ districtSelection.addEventListener("change", async () => {
 
 
 async function displayStateInfoTables(data) {
-   console.log("CALLED STATE INFO")
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let stateLabel = document.getElementById("container-state-label");
    stateLabel.firstChild.textContent = stateName + " Overview";
 
    const [firstPart, secondPart] = splitObject(data[0], 6);
+
+   // get title year for table-2 label
+   let year = getYearString(firstPart);
+   let table2Label = document.getElementById("table-2-title");
+   table2Label.textContent = "State Allocations (" + String(year) + ")";
+
+   let table1Label = document.getElementById("table-1-title");
+   table1Label.textContent = "State Overview";
 
    stateInfoTable(secondPart, "state-info-table-1");
    allocationsTable(firstPart, "state-info-table-2");
@@ -297,7 +332,6 @@ async function displayStateInfoTables(data) {
 
 // All selected state district title tllocations
 async function displayDistrictTitleTable(data) {
-   console.log("CALLED DISTRICT TITLE")
    let tableLabel = document.getElementById("container-table-label");
    tableLabel.firstChild.textContent = "School District List";
 
@@ -330,7 +364,8 @@ async function displayDistrictTitleTable(data) {
 
 async function displayDistrictInfoTable(data) {
 
-   console.log("CALLING DISTRICT INFO TABLE")
+   console.log("IN INFO")
+   console.log(data)
    const districtName = districtSelection.options[districtSelection.selectedIndex].text;
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = districtName + " Overview";
@@ -338,72 +373,15 @@ async function displayDistrictInfoTable(data) {
    // ensure selected table row and selected dropdown item are the same
    districtSelection.value = selectedRow;
 
-   // let districtData;
-
-   // if (data.length > 1) {
-
-   //    districtData = data.filter(
-   //       val => val["State District Name"].includes(districtSelection.value)
-   //    );
-   // }
-   // else {
-   //    districtData = data;
-   // }
-
-   // create district table
    districtInfoTable(data[0], "district-info-table");
-   
-   // // District Ag-Grid Table
-   // let tableLabel = document.getElementById("container-table-label");
-   // tableLabel.firstChild.textContent = "School District List";
-
-   // // remove unused columns
-   // let kept = [
-   //    "State District ID", "State District Name", "Allocation Year", "Title I",
-   //    "Title II", "Title III", "Title IV", "Title V"
-   // ];
-   // let tabledata = filterObj(data, kept);
-
-   // let tableOptions = createStateTable(tabledata,"stateTable");
-
-   // if (!displayDistrictData.initialize) {
-
-   //    const tableGridDiv = document.querySelector("#stateTable");
-
-   //    tableGridApi = agGrid.createGrid(
-   //          tableGridDiv, tableOptions
-   //       );
-      
-   //    displayDistrictData.initialize = true;
-
-   // }
-   // else {
-   //    tableGridApi.setGridOption(
-   //          "columnDefs", tableOptions.columnDefs
-   //       );
-   //    tableGridApi.setGridOption("rowData", tabledata);
-   // }
 };
 
 
-// async function displaySingleDistrictData(data) {
-
-//    let districtLabel = document.getElementById("container-district-label");
-//    districtLabel.firstChild.textContent = selectedRow + " Overview";
-
-//    districtSelection.value = selectedRow;
-
-//    districtInfoTable(data[0], "district-info-table");
-// };
-
-
-/* Initialize App */
+/* Initialize */
 if (document.readyState !== "loading") {
-   console.log("ONCE LOAD")
    await setStateList()
    await getStateData(stateSelection.value);
    await  getSingleDistrictData(districtSelection.value);
-
 };
 
 </script>

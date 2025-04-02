@@ -59,6 +59,10 @@ def load_state_dropdown():
 
     state_df = get_state_dropdown()
 
+    # convert NaN to "" otherwise the field gets dropped
+    # when serialized
+    state_df = state_df.fillna("")
+    
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in state_df.to_dict(orient="records")

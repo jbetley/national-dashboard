@@ -33,9 +33,10 @@ function fadeDiv(element, duration, fadeOut = true) {
          element.style.display = 'none';
       }
    }
-
    if (!fadeOut) {
-      element.style.display = 'block';
+// TODO: TESTING FLEX
+      element.style.display = 'flex';
+      // element.style.display = 'block';
    }
    requestAnimationFrame(animate);
 };
@@ -70,21 +71,21 @@ function stateInfoTable(data, id) {
 
          if (i==0) {
             if (j==0) {
-               td.appendChild(document.createTextNode('# of School Districts'));
+               td.appendChild(document.createTextNode('# School Districts:'));
             } else {
                td.appendChild(document.createTextNode(data['Total School Districts']));
             }
          }
          else if (i==1) {
             if (j==0) {
-               td.appendChild(document.createTextNode('# of Traditional Public Schools'));
+               td.appendChild(document.createTextNode('# Traditional Schools:'));
             } else {
                td.appendChild(document.createTextNode(data['Traditional Public Schools']));
             }
          }
          else if (i==2) {
             if (j==0) {
-               td.appendChild(document.createTextNode('# of Charter Public Schools'));
+               td.appendChild(document.createTextNode('# Charter Schools:'));
             }
             else {
                td.appendChild(document.createTextNode(data['Charter Public Schools']));
@@ -92,7 +93,7 @@ function stateInfoTable(data, id) {
          }
          else if (i == 3) {
             if (j==0) {
-               td.appendChild(document.createTextNode('Voucher Program'));
+               td.appendChild(document.createTextNode('Voucher Program:'));
             }
             else {
                td.appendChild(document.createTextNode(data['Voucher Program']));
@@ -100,7 +101,7 @@ function stateInfoTable(data, id) {
          }
          else if (i == 4) {
             if (j==0) {
-               td.appendChild(document.createTextNode('ESA Program'));
+               td.appendChild(document.createTextNode('ESA Program:'));
             }
             else {
                td.appendChild(document.createTextNode(data['ESA Program']));
@@ -108,7 +109,7 @@ function stateInfoTable(data, id) {
          }
          else {
             if (j==0) {
-               td.appendChild(document.createTextNode('Written Notice Required'));
+               td.appendChild(document.createTextNode('Written Notice Required:'));
             }
             else {
                td.appendChild(document.createTextNode(data['Written Notice']));
@@ -154,10 +155,10 @@ function allocationsTable(object, id) {
          } else {
             td.width = '75';
          }
-         td.height = '10';
+         td.height = '18';
          if (i==0) {
            if (j==0) {
-              td.appendChild(document.createTextNode('Statewide Allocations'));
+              td.appendChild(document.createTextNode(''));
            }
            else {
               td.appendChild(document.createTextNode(keys[cnt1]));
@@ -166,7 +167,7 @@ function allocationsTable(object, id) {
 
          } else if (i == 1) {
             if (j==0) {
-               td.appendChild(document.createTextNode(year));
+               td.appendChild(document.createTextNode('Allocations'));
             }
             else {
                td.appendChild(document.createTextNode(data[keys[cnt1]]));
@@ -192,9 +193,9 @@ function allocationsTable(object, id) {
 function districtInfoTable(data, id) {
 
    let districtInfoTableDiv = document.getElementById(id);
-   console.log("CALLED DISTRICT INFO TABLE")
+
    //fade out (ms)
-   fadeDiv(districtInfoTableDiv, 500);
+   fadeDiv(districtInfoTableDiv, 250);
 
    districtInfoTableDiv.innerHTML = '';
 
@@ -215,7 +216,7 @@ function districtInfoTable(data, id) {
          if (col == 0) {
             td.width = '125';
          }
-         td.height = '10';
+         td.height = '12';
 
          if (row==0) {
             if (col==0) {
@@ -263,14 +264,15 @@ function districtInfoTable(data, id) {
          tr.appendChild(td);
       }
    }
-   // districtInfoTableDiv.appendChild(table);
    
-   // fade in 
+   // fade in
+   // NOTE: timeout interval must be at least equal to the fade duration, if it
+   // is less than the fade duration, the animation will trigger one too many
+   // times causing the div to remain faded out
    setTimeout(() => {
-      console.log("FADE IN")
       districtInfoTableDiv.appendChild(table);
-      fadeDiv(districtInfoTableDiv, 500, false);
-      }, 50);
+      fadeDiv(districtInfoTableDiv, 250, false);
+      }, 300);
 };
 
 
