@@ -74,6 +74,22 @@ label {
   color:  steelblue;
 }
 
+.note {
+  padding: 2px;
+  border: 1px solid steelblue;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.note-container {
+  display: inline-block;
+  width: 50%;
+  font-weight: 400;
+  padding-top: 5px;
+  text-align: center;
+}
+
 /* Navigation */
 button {
   border-radius: 0;
@@ -228,7 +244,6 @@ button:not(:disabled) {
 
 /* Dropdown Menu */
 #dropdown {
- width: 80%;
  background: none;
  font-size: .75rem;
  border: 1px solid rgba(192,193,199, .5);
@@ -315,7 +330,7 @@ select:focus {
 }
 
 .state-box {
-  height:75%;
+  height: 150px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -331,7 +346,7 @@ select:focus {
 }
 
 .district-box {
-  height:75%;
+  height:150px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -399,13 +414,14 @@ select:focus {
   font-weight: 500;
 }
 
+/* vertical line between tables */
 .state-table-1::after {
   content: "";
   position: absolute;
   width: .5px;
   right: 3%;
   height: 100%;
-  background: black;
+  background: steelblue;
   top: 20%;
   transform: translate(0%, -10%);
 }
@@ -444,6 +460,7 @@ select:focus {
 
 .district-table {
   padding: 5px;
+  height: 120px;
   font-family: 'Inter', sans-serif;
   color: steelblue;
   font-size: 12px;

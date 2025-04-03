@@ -4,6 +4,24 @@
 // date:     03.27.25 
 
 
+// sorts objects by number, moves blanks to end
+function sortObjectsByNumberWithBlanksToEnd(arr, property) {
+  arr.sort((a, b) => {
+     const aValue = a[property];
+     const bValue = b[property];
+     if ((aValue === null || aValue === undefined || aValue === '') && (bValue !== null && bValue !== undefined && bValue !== '')) {
+        return 1; 
+     }
+     if ((bValue === null || bValue === undefined || bValue === '') && (aValue !== null && aValue !== undefined && aValue !== '')) {
+        return -1;
+     }
+     
+     return (bValue || 0) - (aValue || 0);
+  });
+  return arr;
+}
+
+
 // format raw phone number string (keeps '+1' international
 // prefix if exists)
 function formatPhoneNumber(phoneNumberString) {

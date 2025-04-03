@@ -6,7 +6,7 @@
 # version:  1.0  # noqa: ERA001
 # date:     03/29/25
 
-# NOTE: Do a global replace "app" with "application" before loading
+# NOTE: global replace "app" with "application" before loading
 # to server. also rename app.py to application.py
 
 import os
@@ -22,10 +22,10 @@ from load_data import (
     get_state_dropdown,
 )
 
-app = Flask(__name__, static_folder="./modules")
+application = Flask(__name__, static_folder="./modules")
 
 load_dotenv()
-app.secret_key = os.environ.get('SECRET_KEY')
+application.secret_key = os.environ.get('SECRET_KEY')
 PASSWORD_HASH = os.environ.get('PASSWORD_HASH')
 
 def check_auth(password):
@@ -33,7 +33,7 @@ def check_auth(password):
     return bcrypt.checkpw(password.encode('utf-8'), PASSWORD_HASH.encode('utf-8'))
 
 
-@app.route('/form_login', methods=['POST', 'GET'])
+@application.route('/form_login', methods=['POST', 'GET'])
 def login():
     usr = ""
     pwd = request.form['password']
@@ -48,13 +48,13 @@ def login():
         return render_template('index.html', name=usr)
 
  
-@app.route("/")
+@application.route("/")
 def index():
     return render_template("login.html")
 
 
 # school dropdown list
-@app.route("/load", methods=["GET"])
+@application.route("/load", methods=["GET"])
 def load_state_dropdown():
 
     state_df = get_state_dropdown()
@@ -69,33 +69,40 @@ def load_state_dropdown():
     ]
 
 
-@app.route("/districts", methods=["post"])
+@application.route("/districts", methods=["post"])
 def load_all_district_data():
     
     data = request.get_json()
 
     district_data = get_all_district_data(data)
-
+   
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in district_data.to_dict(orient="records")
     ]
 
 
-@app.route("/district", methods=["post"])
+@application.route("/district", methods=["post"])
 def load_single_district_data():
     
     data = request.get_json()
 
     district_data = get_single_district_data(data)
 
+# TODO: Fix
+# FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and
+# will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to
+# the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+    district_data["Number Charter Schools"] = \
+        district_data["Number Charter Schools"].fillna(0)
+    
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in district_data.to_dict(orient="records")
     ]
 
 
-@app.route("/states", methods=["post"])
+@application.route("/states", methods=["post"])
 def load_state_data():
 
     data = request.get_json()
@@ -105,11 +112,11 @@ def load_state_data():
     # NOTE: For some reason the district_data conversion causes this
     # dataset to drop some records (with same First name)
     return state_data.to_dict('records')
- 
-    # return [
-    #     {k: v for k, v in m.items() if v == v and v is not None}
-    #     for m in state_data.to_dict(orient="records")
-    # ]
+
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port="8001")
+    application.run(host="127.0.0.1", port="8001")
+
+# if __name__ == "__main__":
+#     application.run(host="0.0.0.0", port=4000, debug=True)  # noqa: S104, S201
+    

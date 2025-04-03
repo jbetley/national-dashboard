@@ -27,64 +27,35 @@
       <br>
       <label>Select District:</label>
       <select name="district" id="districtSelect"></select>
+      <div class="note-container"><div class="note">Use District dropdown or click on table row to change district information.</div></div>
    </form>
    <div class="row">
       <div class="panel-container">
          <div class="parent">
             <div class="state-grid">
-               <!-- <div class="grid"> -->
-            <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
-            <div class="state-box state-info" id="container-state-info">
-               <div class="state-table-1">
-                  <div class="table-title" id="table-1-title"></div>
-                  <div id="state-info-table-1"></div>
-               </div>
-               <div class="state-table-2">
-                  <div class="table-title" id="table-2-title"></div>
-                  <div id="state-info-table-2"></div>
-               </div>
-            </div>
-         <!-- </div>   -->
-      </div>
-      <div class="district-grid">
-         <!-- <div class="grid"> -->
-            <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header"></div></div>
-            <div class="district-box district-info" id="container-district-info">
-               <div class="district-table" id="district-info-table"></div>
-            </div>
-         <!-- </div>   -->
-      </div>
-      <div class="table-grid">
-         <!-- <div class="grid"> -->
-            <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header"></div></div>     
-            <div class="table-box state-table"  id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
-         <!-- </div> -->
-      </div>
-</div> 
-
-         <!-- <section id="state">
-            <div class="grid">
                <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
                <div class="state-box state-info" id="container-state-info">
-                  <div id="state-info-table-1" class="state-table-1"></div>
-                  <div id="state-info-table-2" class="state-table-2"></div>
+                  <div class="state-table-1">
+                     <div class="table-title" id="table-1-title"></div>
+                     <div id="state-info-table-1"></div>
+                  </div>
+                  <div class="state-table-2">
+                     <div class="table-title" id="table-2-title"></div>
+                     <div id="state-info-table-2"></div>
+                  </div>
                </div>
-            </div>  
-         </section>
-         <section id="district">
-            <div class="grid">
-               <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header-sm"></div></div>
-               <div class="district-box district-info" id="container-district-info">
-                  <div id="district-info-table" class="district-table"></div>
-               </div>
-            </div>  
-         </section>
-         <section id="table">
-            <div class="grid">
-               <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header-sm"></div></div>
-               <div class="table-box state-table" id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
-            </div>  
-         </section> -->
+            </div>
+            <div class="district-grid">
+                  <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header"></div></div>
+                  <div class="district-box district-info" id="container-district-info">
+                     <div class="district-table" id="district-info-table"></div>
+                  </div>
+            </div>
+            <div class="table-grid">
+                  <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header"></div></div>     
+                  <div class="table-box state-table"  id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+            </div>
+         </div> 
       </div>  
    </div>
 </body>
@@ -92,8 +63,8 @@
 
 // National State and School District Info
 // author:   jbetley (https://github.com/jbetley)
-// version:  0.9
-// date:     03.27.25
+// version:  1.0
+// date:     03.29.25
 
 const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
@@ -191,22 +162,6 @@ async function setDistrictList() {
       val => val["State Abbreviation"].includes(stateSelection.value)
    );
 
-   function sortObjectsByNumberWithBlanksToEnd(arr, property) {
-      arr.sort((a, b) => {
-         const aValue = a[property];
-         const bValue = b[property];
-         if ((aValue === null || aValue === undefined || aValue === '') && (bValue !== null && bValue !== undefined && bValue !== '')) {
-            return 1; 
-         }
-         if ((bValue === null || bValue === undefined || bValue === '') && (aValue !== null && aValue !== undefined && aValue !== '')) {
-            return -1;
-         }
-         
-         return (bValue || 0) - (aValue || 0);
-      });
-      return arr;
-   }
-
    // NOTE: we want list sorted alphabetically, except for default, which we
    // want to be the school with the highest Title I Allocation (the
    // DistrictTitleTable order is sorted by Title I Allocation)
@@ -272,6 +227,7 @@ function createStateTable(data, tableID) {
          e.headerClass = "text-center";
       }
       else {
+         e.valueFormatter = "";
          e.flex = 1;
          e.resizable = false;
          e.cellClass = "ag-center-aligned-cell";
@@ -313,19 +269,37 @@ async function displayStateInfoTables(data) {
    let stateLabel = document.getElementById("container-state-label");
    stateLabel.firstChild.textContent = stateName + " Overview";
 
-   const [firstPart, secondPart] = splitObject(data[0], 6);
+   let firstPart = {};
+   let secondPart = {};
+   let year;
 
-   // get title year for table-2 label
-   let year = getYearString(firstPart);
+   if (!Array.isArray(data) || !data.length) {
+      year = "-";
+   }
+   else {
+      [firstPart, secondPart] = splitObject(data[0], 6);
+
+      // get title year for table-2 label
+      year = getYearString(firstPart);
+   }
+
    let table2Label = document.getElementById("table-2-title");
    table2Label.textContent = "State Allocations (" + String(year) + ")";
 
    let table1Label = document.getElementById("table-1-title");
    table1Label.textContent = "State Overview";
 
-   stateInfoTable(secondPart, "state-info-table-1");
-   allocationsTable(firstPart, "state-info-table-2");
- 
+   //fade out both tables at once using the container
+   let stateInfoTableDiv = document.getElementById("container-state-info");
+   
+   fadeDiv(stateInfoTableDiv, 250);
+
+   setTimeout(() => {
+      stateInfoTable(secondPart, "state-info-table-1");
+      allocationsTable(firstPart, "state-info-table-2");
+      fadeDiv(stateInfoTableDiv, 250, false);
+   }, 300);
+
    await getAllDistrictData(stateSelection.value);
 };
 
@@ -340,6 +314,7 @@ async function displayDistrictTitleTable(data) {
       "State District ID", "State District Name", "Allocation Year", "Title I",
       "Title II", "Title III", "Title IV", "Title V"
    ];
+
    let tabledata = filterObj(data, kept);
 
    let tableOptions = createStateTable(tabledata,"stateTable");
@@ -364,8 +339,6 @@ async function displayDistrictTitleTable(data) {
 
 async function displayDistrictInfoTable(data) {
 
-   console.log("IN INFO")
-   console.log(data)
    const districtName = districtSelection.options[districtSelection.selectedIndex].text;
    let districtLabel = document.getElementById("container-district-label");
    districtLabel.firstChild.textContent = districtName + " Overview";
