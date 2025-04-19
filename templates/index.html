@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <title>Indiana School Academic Dashboard</title>
+   <title>SchoolStatus District Information Dashboard</title>
 
    <!-- Imported Fonts -->
    <link  rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -29,6 +29,16 @@
       <select name="district" id="districtSelect"></select>
       <div class="note-container"><div class="note">Use District dropdown or click on table row to change district information.</div></div>
    </form>
+   <div id ="tabnavigation">
+      <div class="row">
+         <div class="nav-container twelve columns">
+            <div id="nav-tabs" class="nav">
+               <button data-tab="tab-n-1" id="titleTab" class="tab main active">Title Funding</button>
+               <button data-tab="tab-n-2" id="attendanceTab" class="tab main">Attendance Data</button>
+            </div>
+         </div>
+      </div>
+   </div>
    <div class="row">
       <div class="panel-container">
          <div class="parent">
@@ -51,10 +61,31 @@
                      <div class="district-table" id="district-info-table"></div>
                   </div>
             </div>
-            <div class="table-grid">
-                  <div class="empty-box label" id="container-table-label"><div id="table-label" class="label__header"></div></div>     
-                  <div class="table-box state-table"  id="container-state-table"><div id="stateTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+            <div class="title-grid">
+               <div class="empty-box label" id="container-title-table-label"><div id="title-table-label" class="label__header"></div></div>     
+               <div class="table-box title-table"  id="container-title-table"><div id="titleTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
             </div>
+            <!-- <div class="data-grid">
+               <div class="empty-box label" id="container-data-label"><div id="data-label" class="label__header"></div></div>
+               <div class="data-box data-info" id="container-data-info">
+                  <div class="data-attendance-table">
+                     <div class="table-title" id="attendance-table-title"></div>
+                     <div id="attendance-table"></div>
+                  </div>
+                  <div class="data-absenteeism-table">
+                     <div class="table-title" id="absenteeism-table-title"></div>
+                     <div id="absenteeism-table"></div>
+                  </div>
+               </div>
+            </div>             -->
+            <div class="attendance-grid">
+               <div class="empty-box label" id="container-attendance-table-label"><div id="attendance-table-label" class="label__header"></div></div>     
+               <div class="table-box attendance-table"  id="container-attendance-table"><div id="attendanceTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+            </div>
+            <!-- <div class="table-grid">
+               <div class="empty-box label" id="container-absenteeism-table-label"><div id="absenteeism-table-label" class="label__header"></div></div>     
+               <div class="table-box absenteeism-table"  id="container-absenteeism-table"><div id="absenteeismTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+            </div>             -->
          </div> 
       </div>  
    </div>
@@ -113,6 +144,28 @@ async function getAllDistrictData(select) {
          }
       });
    displayDistrictTitleTable(data);
+};
+
+
+async function getAttendanceData(select) {
+   console.log(select)
+   const data = await fetch(`${window.origin}/attendance`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(select)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
+         }
+      });
+   displayAttendanceTables(data);
 };
 
 
@@ -192,19 +245,28 @@ async function setDistrictList() {
 
 // NOTE: This needs to be in index.html so getSingleDistrictData()
 // is in scope
-function createStateTable(data, tableID) {
+function createTitleTable(data, tableID) {
    let keys = Object.keys(data.reduce(function(result, obj) {
       return Object.assign(result, obj);
    }, {}));
 
-   keys = keys.filter(item => item != "State District Name");
-   keys.unshift("State District Name")
+   let nameLabel;
+
+   if (tableID == "titleTable") {
+      nameLabel = "State District Name"
+   }
+   else {
+      nameLabel = "District Name"
+   }
+   
+   keys = keys.filter(item => item != nameLabel);
+   keys.unshift(nameLabel)
 
    let columns = keys.map(field => ({field}));
 
    columns.forEach(function(e) {
 
-      if (e.field == "State District Name") {
+      if (e.field == nameLabel) {
          e.valueFormatter = "";
          e.resizable = false;
          e.autoHeight = true;
@@ -238,7 +300,8 @@ function createStateTable(data, tableID) {
    let options = {
       columnDefs: columns,
       onRowClicked: function (e) {
-         const school = e.data["State District Name"];
+         const school = e.data[nameLabel];
+         districtSelection.value = school;
          getSingleDistrictData(school);
       },
       rowData: data,
@@ -259,12 +322,71 @@ stateSelection.addEventListener("change", async () => {
 });
 
 var districtSelection = document.getElementById("districtSelect");
+
 districtSelection.addEventListener("change", async () => {
    getSingleDistrictData(districtSelection.value);
 });
 
 
+// switches active status for tabs
+const navTabs = document.querySelector("div#nav-tabs"),
+nav_tab_elms = document.querySelectorAll("button[data-tab], div[data-tab]");
+navTabs.onclick = ({target}) => {
+   // ignore other clicks in this area (like spaces between buttons)
+   if (!target.matches("button[data-tab]")) return;
+
+   // cycling through "dataset", tab-n-1", "tab-n-2", etc. and setting
+   // class to active where the target.dataset equals the class
+   nav_tab_elms.forEach(elTab => {
+      elTab.classList
+      .toggle("active", (elTab.dataset.tab===target.dataset.tab))
+   })
+};
+
+// Navigation Tabs //
+if (tabnavigation.addEventListener) {
+   tabnavigation.addEventListener('click',navigateHandler,false);
+}
+else {
+   tabnavigation.addEventListener('onclick',navigateHandler);
+};
+
+async function navigateHandler(e) {
+   e = e || window.event;
+   const target = e.target || e.srcElement;
+
+   console.log(target.id)
+
+   const attendanceContainerLabel = document.getElementById("container-attendance-table-label");
+   const attendanceContainer = document.getElementById("container-attendance-table");
+   const titleContainerLabel = document.getElementById("container-title-table-label");
+   const titleContainer = document.getElementById("container-title-table");
+
+   if (target.id == "attendanceTab") {
+
+      titleContainer.style.display = "none";
+      titleContainerLabel.style.display = "none";
+      attendanceContainer.style.display = "flex";
+      attendanceContainerLabel.style.display = "flex";
+
+      getAttendanceData(stateSelection.value);
+   }
+   else {
+
+      attendanceContainer.style.display = "none";
+      attendanceContainerLabel.style.display = "none";
+      titleContainer.style.display = "flex";
+      titleContainerLabel.style.display = "flex";
+
+      getAllDistrictData(stateSelection.value);
+   }
+}
+
+
 async function displayStateInfoTables(data) {
+
+   const pageTab = document.querySelector(".tab.main.active").id;
+
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let stateLabel = document.getElementById("container-state-label");
    stateLabel.firstChild.textContent = stateName + " Overview";
@@ -304,9 +426,12 @@ async function displayStateInfoTables(data) {
 };
 
 
-// All selected state district title tllocations
+// All selected state district title allocations
 async function displayDistrictTitleTable(data) {
-   let tableLabel = document.getElementById("container-table-label");
+
+   const pageTab = document.querySelector(".tab.main.active").id;
+
+   let tableLabel = document.getElementById("container-title-table-label");
    tableLabel.firstChild.textContent = "School District List";
 
    // remove unused columns
@@ -317,11 +442,13 @@ async function displayDistrictTitleTable(data) {
 
    let tabledata = filterObj(data, kept);
 
-   let tableOptions = createStateTable(tabledata,"stateTable");
+   console.log(tabledata)
+   let tableOptions = createTitleTable(tabledata,"titleTable");
 
+// TODO: WRONG? SHOULD THIS BE DISTTITLETABL?
    if (!displayStateInfoTables.initialize) {
 
-      const tableGridDiv = document.querySelector("#stateTable");
+      const tableGridDiv = document.querySelector("#titleTable");
 
       tableGridApi = agGrid.createGrid(
             tableGridDiv, tableOptions
@@ -336,6 +463,73 @@ async function displayDistrictTitleTable(data) {
    }
 };
 
+// TODO
+async function displayAttendanceTables(data) {
+
+   console.log("ATTENDANCE")
+
+
+   let attendanceLabel = document.getElementById("container-attendance-table-label");
+   const stateName = stateSelection.options[stateSelection.selectedIndex].text;
+   attendanceLabel.firstChild.textContent = stateName + " Attendance Rate";
+
+   let kept = [
+      "District ID", "District Name", "Year", "Attendance Rate"
+   ];
+
+   let tabledata = filterObj(data, kept);
+
+   // Swap keyToKeep value with keyToReplace and drop both
+   // original items in the object
+   function replaceKeyWithValue(arr, keyToKeep, keyToReplace) {
+      return arr.map(obj => {
+         if (obj.hasOwnProperty(keyToReplace)) {
+            const value = obj[keyToKeep];
+            obj[value] = obj[keyToReplace];
+            delete obj[keyToKeep];
+            delete obj[keyToReplace];
+         }
+         return obj;
+      });
+   }
+
+   let transformeddata = replaceKeyWithValue(tabledata, 'Year', 'Attendance Rate');
+
+   function mergeObjectsWithSameValue(arr, key) {
+      const merged = {};
+      arr.forEach(obj => {
+         const value = obj[key];
+         if (merged[value]) {
+            Object.assign(merged[value], obj);
+         } else {
+            merged[value] = obj;
+         }
+      });
+      return Object.values(merged);
+   }
+
+   let merged = mergeObjectsWithSameValue(transformeddata, "District ID")
+   console.log(merged)
+
+   let tableOptions = createTitleTable(merged, "attendanceTable");
+
+   if (!displayAttendanceTables.initialize) {
+
+      const tableGridDiv = document.querySelector("#attendanceTable");
+
+      tableGridApi = agGrid.createGrid(
+            tableGridDiv, tableOptions
+         );
+      displayAttendanceTables.initialize = true;
+   }
+   else {
+      tableGridApi.setGridOption(
+            "columnDefs", tableOptions.columnDefs
+         );
+      tableGridApi.setGridOption("rowData", tabledata);
+   }
+};
+// TODO
 
 async function displayDistrictInfoTable(data) {
 

@@ -69,6 +69,7 @@ def get_all_district_data(state_id):
 
     params = {"id": state_id}
 
+    print(params)
     w = text(
         """
         SELECT *
@@ -101,6 +102,25 @@ def get_single_district_data(school_name):
     district_data = district_data.sort_values(by="Title I", ascending=False)
 
     return district_data.reset_index(drop=True)
+
+
+def get_attendance_data(school_name):
+
+    params = {"id": school_name}
+    print(params)
+    w = text(
+        """
+        SELECT *
+            FROM attendance
+            WHERE State = :id
+        """,
+    )
+
+    attendance_data = run_query(w, params)
+
+    attendance_data = attendance_data.sort_values(by="Attendance Rate", ascending=False)
+
+    return attendance_data.reset_index(drop=True)
 
 
 def get_state_data(state_id):

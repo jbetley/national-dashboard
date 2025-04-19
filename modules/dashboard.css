@@ -136,11 +136,12 @@ button:not(:disabled) {
 .nav-container {
   display: grid;
   place-items: center;
-  margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   width: 100%;
 }
 
-.k8nav.open, .hsnav.open, .typenav.open, .analysisnav.open {
+.nav.open {
   z-index: 99;
   margin: 0;
   padding: 0;
@@ -219,7 +220,7 @@ button:not(:disabled) {
   width: 65px;
 }
 
-.tab.analysis, .tab.analysis.active, .tab.analysis:hover {
+/* .tab.analysis, .tab.analysis.active, .tab.analysis:hover {
   width: 105px;
 }
 
@@ -230,7 +231,7 @@ button:not(:disabled) {
 .tab.hsinfo, .tab.hsinfo:active, .tab.hsinfo:hover {
   width: 105px;
   height: 40px;
-}
+} */
 
 .panel-container  {
   border: solid #c0c1c7 1px;
@@ -248,13 +249,13 @@ button:not(:disabled) {
  font-size: .75rem;
  border: 1px solid rgba(192,193,199, .5);
  border-radius: .5rem;
- margin: 25px;
+ margin: 5px;
  padding: .2em;
 }
 
-#corpSelect {
+/* #corpSelect {
   width: 45%
-}
+} */
 
 select {
   background: none;
@@ -269,9 +270,9 @@ select {
   cursor: pointer;
 }
 
-#corpSelect > select {
+/* #corpSelect > select {
   width: 45%
-}
+} */
 select option {
   color: steelblue;
 }
@@ -284,7 +285,6 @@ select:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
-
 
 /* Grid */
 .parent {
@@ -307,7 +307,13 @@ select:focus {
   grid-gap: .5em;
 }
 
-.table-grid {  
+.title-grid {  
+  grid-area: 2 / 1 / span 1 / span 5;
+  margin: 1em;
+  grid-gap: .5em;
+}
+
+.attendance-grid {  
   grid-area: 2 / 1 / span 1 / span 5;
   margin: 1em;
   grid-gap: .5em;
