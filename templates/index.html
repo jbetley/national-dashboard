@@ -39,55 +39,42 @@
          </div>
       </div>
    </div>
-   <div class="row">
-      <div class="panel-container">
+   <div class="panel-container">
+      <div class="row">
          <div class="parent">
-            <div class="state-grid">
-               <div class="empty-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
-               <div class="state-box state-info" id="container-state-info">
-                  <div class="state-table-1">
-                     <div class="table-title" id="table-1-title"></div>
-                     <div id="state-info-table-1"></div>
-                  </div>
-                  <div class="state-table-2">
-                     <div class="table-title" id="table-2-title"></div>
-                     <div id="state-info-table-2"></div>
+               <div class="state-grid">
+                  <div class="header-box label" id="container-state-label"><div id="state-label" class="label__header"></div></div>
+                  <div class="state-box state-info" id="container-state-info">
+                     <div class="state-table-1">
+                        <div class="table-title" id="table-1-title"></div>
+                        <div id="state-info-table-1"></div>
+                     </div>
+                     <div class="state-table-2">
+                        <div class="table-title" id="table-2-title"></div>
+                        <div id="state-info-table-2"></div>
+                     </div>
                   </div>
                </div>
-            </div>
-            <div class="district-grid">
-                  <div class="empty-box label" id="container-district-label"><div id="district-label" class="label__header"></div></div>
+               <div class="district-grid">
+                  <div class="header-box label" id="container-district-label"><div id="district-label" class="label__header"></div></div>
                   <div class="district-box district-info" id="container-district-info">
                      <div class="district-table" id="district-info-table"></div>
                   </div>
-            </div>
-            <div class="title-grid">
-               <div class="empty-box label" id="container-title-table-label"><div id="title-table-label" class="label__header"></div></div>     
-               <div class="table-box title-table"  id="container-title-table"><div id="titleTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
-            </div>
-            <!-- <div class="data-grid">
-               <div class="empty-box label" id="container-data-label"><div id="data-label" class="label__header"></div></div>
-               <div class="data-box data-info" id="container-data-info">
-                  <div class="data-attendance-table">
-                     <div class="table-title" id="attendance-table-title"></div>
-                     <div id="attendance-table"></div>
-                  </div>
-                  <div class="data-absenteeism-table">
-                     <div class="table-title" id="absenteeism-table-title"></div>
-                     <div id="absenteeism-table"></div>
-                  </div>
                </div>
-            </div>             -->
-            <div class="attendance-grid">
-               <div class="empty-box label" id="container-attendance-table-label"><div id="attendance-table-label" class="label__header"></div></div>     
-               <div class="table-box attendance-table"  id="container-attendance-table"><div id="attendanceTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
-            </div>
-            <!-- <div class="table-grid">
-               <div class="empty-box label" id="container-absenteeism-table-label"><div id="absenteeism-table-label" class="label__header"></div></div>     
-               <div class="table-box absenteeism-table"  id="container-absenteeism-table"><div id="absenteeismTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
-            </div>             -->
-         </div> 
-      </div>  
+               <div class="title-grid">
+                  <div class="empty-box label" id="container-title-label"><div id="title-label" class="label__header"></div></div>     
+                  <div class="table-box title-table"  id="container-title-table"><div id="titleTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+               </div>
+               <div class="attendance-grid">
+                  <div class="empty-box label" id="container-attendance-label"><div id="attendance-label" class="label__header"></div></div>
+                  <div class="table-box attendance-table"  id="container-attendance-table"><div id="attendanceTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+               </div> 
+               <div class="absenteeism-grid">
+                  <div class="empty-box label" id="container-absenteeism-label"><div id="absenteeism-label" class="label__header"></div></div>
+                  <div class="table-box absenteeism-table"  id="container-absenteeism-table"><div id="absenteeismTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
+               </div>
+         </div>            
+      </div>
    </div>
 </body>
 <script type="module">
@@ -101,8 +88,19 @@ const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
 var allStatesObj = await allStatesResponse.json();
 
-var tableGridApi;
-var selectedRow;
+var tableGridApi,
+   attendanceGridApi,
+   absenteeismGridApi,
+   selectedRow;
+
+const attendanceContainerLabel = document.getElementById("container-attendance-label");
+const attendanceContainer = document.getElementById("container-attendance-table");
+
+const absenteeismContainerLabel = document.getElementById("container-absenteeism-label");
+const absenteeismContainer = document.getElementById("container-absenteeism-table");
+
+const titleContainerLabel = document.getElementById("container-title-label");
+const titleContainer = document.getElementById("container-title-table");
 
 async function getStateData(select) {
    const data = await fetch(`${window.origin}/states`, {
@@ -222,8 +220,8 @@ async function setDistrictList() {
 
    const highest = sortedDistricts.shift();
 
-   sortedDistricts.sort((a, b) => a["State District Name"].toLowerCase() > b["State District Name"].toLowerCase() ? 1 : -1);
-   const districtObj = sortedDistricts.map(obj => ({ name: obj["State District Name"]}));
+   sortedDistricts.sort((a, b) => a["District Name"].toLowerCase() > b["District Name"].toLowerCase() ? 1 : -1);
+   const districtObj = sortedDistricts.map(obj => ({ name: obj["District Name"]}));
 
    // a different way to get unique values (see setStateList)
    let districtDropdown = Array.from(
@@ -231,7 +229,7 @@ async function setDistrictList() {
    );
 
    // add district with highest Title I value to top of array
-   districtDropdown.splice(0, 0, {name: highest["State District Name"]});
+   districtDropdown.splice(0, 0, {name: highest["District Name"]});
 
    // clear existing options
    removeOptions(districtSelection);
@@ -243,36 +241,43 @@ async function setDistrictList() {
 };
 
 
-// NOTE: This needs to be in index.html so getSingleDistrictData()
-// is in scope
+// NOTE: This needs to be in index.html so
+// getSingleDistrictData() is in scope
 function createTitleTable(data, tableID) {
-   let keys = Object.keys(data.reduce(function(result, obj) {
+
+   // rename District ID to save space
+   let newData = data.map(({'District ID': ID, ...rest}) => ({ID, ...rest}));
+
+   let keys = Object.keys(newData.reduce(function(result, obj) {
       return Object.assign(result, obj);
    }, {}));
 
-   let nameLabel;
+   let yearKeys = [];
 
-   if (tableID == "titleTable") {
-      nameLabel = "State District Name"
+   // need to shift ID for attendanceTable to get correct order
+   if (tableID == "attendanceTable") {
+      keys = keys.filter(item => item != "ID");
+      keys.unshift("ID")
+
+      // get list of years
+      const exclude = ["District Name", "ID"]
+      yearKeys = keys.filter(item => !exclude.includes(item));
    }
-   else {
-      nameLabel = "District Name"
-   }
-   
-   keys = keys.filter(item => item != nameLabel);
-   keys.unshift(nameLabel)
+
+   keys = keys.filter(item => item != "District Name");
+   keys.unshift("District Name")
 
    let columns = keys.map(field => ({field}));
 
    columns.forEach(function(e) {
 
-      if (e.field == nameLabel) {
+      if (e.field == "District Name") {
          e.valueFormatter = "";
          e.resizable = false;
          e.autoHeight = true;
          e.wrapText = true;
-         e.minWidth = 200;
-         e.maxWidth = 200;
+         e.minWidth = 150;
+         e.maxWidth = 150;
          e.cellClass = "ag-left-aligned-cell";
          e.headerClass = "text-center";
       } else if (e.field == "Allocation Year") {
@@ -281,7 +286,15 @@ function createTitleTable(data, tableID) {
          e.resizable = false;
          e.cellClass = "ag-center-aligned-cell";
          e.headerClass = "text-center";
-      } else if (e.field.includes("Title")) {
+      } 
+      else if (yearKeys.includes(e.field )) {
+         e.valueFormatter = percentFormatter;
+         e.flex = 1;
+         e.resizable = false;
+         e.cellClass = "ag-center-aligned-cell";
+         e.headerClass = "text-center";
+      } 
+      else if (e.field.includes("Title")) {
          e.valueFormatter = moneyFormatter;
          e.flex = 1;
          e.resizable = false;
@@ -300,11 +313,11 @@ function createTitleTable(data, tableID) {
    let options = {
       columnDefs: columns,
       onRowClicked: function (e) {
-         const school = e.data[nameLabel];
+         const school = e.newData["District Name"];
          districtSelection.value = school;
          getSingleDistrictData(school);
       },
-      rowData: data,
+      rowData: newData,
       gridId: tableID,
       tooltipShowDelay: 0,
       enableBrowserTooltips: false
@@ -319,6 +332,10 @@ stateSelection.addEventListener("change", async () => {
    await setDistrictList();
    await getStateData(stateSelection.value);
    await getSingleDistrictData(districtSelection.value);
+
+   const pageTab = document.querySelector(".tab.main.active").id;
+   // TODO: LOGIC HERE to get appropriate Data
+   await getAllDistrictData(stateSelection.value);
 });
 
 var districtSelection = document.getElementById("districtSelect");
@@ -355,19 +372,14 @@ async function navigateHandler(e) {
    e = e || window.event;
    const target = e.target || e.srcElement;
 
-   console.log(target.id)
-
-   const attendanceContainerLabel = document.getElementById("container-attendance-table-label");
-   const attendanceContainer = document.getElementById("container-attendance-table");
-   const titleContainerLabel = document.getElementById("container-title-table-label");
-   const titleContainer = document.getElementById("container-title-table");
-
    if (target.id == "attendanceTab") {
 
       titleContainer.style.display = "none";
       titleContainerLabel.style.display = "none";
       attendanceContainer.style.display = "flex";
       attendanceContainerLabel.style.display = "flex";
+      absenteeismContainer.style.display = "flex";
+      absenteeismContainerLabel.style.display = "flex";
 
       getAttendanceData(stateSelection.value);
    }
@@ -375,17 +387,17 @@ async function navigateHandler(e) {
 
       attendanceContainer.style.display = "none";
       attendanceContainerLabel.style.display = "none";
+      absenteeismContainer.style.display = "none";
+      absenteeismContainerLabel.style.display = "none";
       titleContainer.style.display = "flex";
       titleContainerLabel.style.display = "flex";
 
       getAllDistrictData(stateSelection.value);
    }
-}
+};
 
 
 async function displayStateInfoTables(data) {
-
-   const pageTab = document.querySelector(".tab.main.active").id;
 
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    let stateLabel = document.getElementById("container-state-label");
@@ -421,39 +433,41 @@ async function displayStateInfoTables(data) {
       allocationsTable(firstPart, "state-info-table-2");
       fadeDiv(stateInfoTableDiv, 250, false);
    }, 300);
-
-   await getAllDistrictData(stateSelection.value);
 };
 
 
 // All selected state district title allocations
 async function displayDistrictTitleTable(data) {
 
-   const pageTab = document.querySelector(".tab.main.active").id;
-
-   let tableLabel = document.getElementById("container-title-table-label");
+   let tableLabel = document.getElementById("container-title-label");
    tableLabel.firstChild.textContent = "School District List";
 
    // remove unused columns
    let kept = [
-      "State District ID", "State District Name", "Allocation Year", "Title I",
+      "District ID", "District Name", "Allocation Year", "Title I",
       "Title II", "Title III", "Title IV", "Title V"
    ];
 
    let tabledata = filterObj(data, kept);
 
-   console.log(tabledata)
    let tableOptions = createTitleTable(tabledata,"titleTable");
 
-// TODO: WRONG? SHOULD THIS BE DISTTITLETABL?
-   if (!displayStateInfoTables.initialize) {
+   if (!displayDistrictTitleTable.initialize) {
+
+      // set default visibility of the three tables
+      attendanceContainer.style.display = "none";
+      attendanceContainerLabel.style.display = "none";
+      absenteeismContainer.style.display = "none";
+      absenteeismContainerLabel.style.display = "none";
+      titleContainer.style.display = "flex";
+      titleContainerLabel.style.display = "flex";
 
       const tableGridDiv = document.querySelector("#titleTable");
 
       tableGridApi = agGrid.createGrid(
             tableGridDiv, tableOptions
          );
-      displayStateInfoTables.initialize = true;
+         displayDistrictTitleTable.initialize = true;
    }
    else {
       tableGridApi.setGridOption(
@@ -463,73 +477,79 @@ async function displayDistrictTitleTable(data) {
    }
 };
 
-// TODO
+
 async function displayAttendanceTables(data) {
 
-   console.log("ATTENDANCE")
-
-
-   let attendanceLabel = document.getElementById("container-attendance-table-label");
+   let attendanceLabel = document.getElementById("container-attendance-label");
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
    attendanceLabel.firstChild.textContent = stateName + " Attendance Rate";
 
-   let kept = [
+   let absenteeismLabel = document.getElementById("container-absenteeism-label");
+   absenteeismLabel.firstChild.textContent = stateName + " Chronic Absenteeism";
+
+   let attendanceCols = [
       "District ID", "District Name", "Year", "Attendance Rate"
    ];
 
-   let tabledata = filterObj(data, kept);
+   let attendanceFiltered = filterObj(data, attendanceCols);
 
-   // Swap keyToKeep value with keyToReplace and drop both
-   // original items in the object
-   function replaceKeyWithValue(arr, keyToKeep, keyToReplace) {
-      return arr.map(obj => {
-         if (obj.hasOwnProperty(keyToReplace)) {
-            const value = obj[keyToKeep];
-            obj[value] = obj[keyToReplace];
-            delete obj[keyToKeep];
-            delete obj[keyToReplace];
-         }
-         return obj;
-      });
-   }
+   // drop objects (Years) with null values - note if a district has 
+   // undefined values for all years, the district will be dropped
+   // completely
+   // TODO: May want to change this later
+   let attendanceCleaned = attendanceFiltered.filter(item => item["Attendance Rate"] !== undefined) 
 
-   let transformeddata = replaceKeyWithValue(tabledata, 'Year', 'Attendance Rate');
+   // Change "Attendance Rate" key to the applicable Year
+   let attendanceRenamed = replaceKeyWithValue(attendanceCleaned, 'Year', 'Attendance Rate');
 
-   function mergeObjectsWithSameValue(arr, key) {
-      const merged = {};
-      arr.forEach(obj => {
-         const value = obj[key];
-         if (merged[value]) {
-            Object.assign(merged[value], obj);
-         } else {
-            merged[value] = obj;
-         }
-      });
-      return Object.values(merged);
-   }
+   // merge all years on district ID
+   let attendanceMerged = mergeObjectsWithSameValue(attendanceRenamed, "District ID")
 
-   let merged = mergeObjectsWithSameValue(transformeddata, "District ID")
-   console.log(merged)
+   let attendanceTableOptions = createTitleTable(attendanceMerged, "attendanceTable");
 
-   let tableOptions = createTitleTable(merged, "attendanceTable");
+   // CA
+   let absenteeismCols = [
+      "District ID", "District Name", "Year", "Chronic Absenteeism"
+   ];
+   let absenteeismFiltered = filterObj(data, absenteeismCols);
+
+   let absenteeismCleaned = absenteeismFiltered.filter(item => item["Chronic Absenteeism"] !== undefined)
+   let absenteeismRenamed = replaceKeyWithValue(absenteeismCleaned, 'Year', 'Chronic Absenteeism');
+   let absenteeismMerged = mergeObjectsWithSameValue(absenteeismRenamed, "District ID")
+   let absenteeismTableOptions = createTitleTable(absenteeismMerged, "attendanceTable");
+
+   const attendanceTableGridDiv = document.querySelector("#attendanceTable");
+   const absenteeismTableGridDiv = document.querySelector("#absenteeismTable");
 
    if (!displayAttendanceTables.initialize) {
 
-      const tableGridDiv = document.querySelector("#attendanceTable");
+      const attendanceTableGridDiv = document.querySelector("#attendanceTable");
+      const absenteeismTableGridDiv = document.querySelector("#absenteeismTable");
 
-      tableGridApi = agGrid.createGrid(
-            tableGridDiv, tableOptions
+      attendanceGridApi = agGrid.createGrid(
+         attendanceTableGridDiv, attendanceTableOptions
          );
+
+      absenteeismGridApi = agGrid.createGrid(
+         absenteeismTableGridDiv, absenteeismTableOptions
+         );
+
       displayAttendanceTables.initialize = true;
    }
    else {
-      tableGridApi.setGridOption(
-            "columnDefs", tableOptions.columnDefs
-         );
-      tableGridApi.setGridOption("rowData", tabledata);
+      attendanceGridApi.setGridOption(
+         "columnDefs", attendanceTableOptions.columnDefs
+      );
+      attendanceGridApi.setGridOption("rowData", attendanceMerged);
+
+      absenteeismGridApi.setGridOption(
+         "columnDefs", absenteeismTableOptions.columnDefs
+      );
+      absenteeismGridApi.setGridOption("rowData", absenteeismMerged);
    }
+
 };
-// TODO
+
 
 async function displayDistrictInfoTable(data) {
 

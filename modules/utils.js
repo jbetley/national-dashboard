@@ -1,7 +1,7 @@
 // general utility functions
 // author:   jbetley (https://github.com/jbetley)
 // version:  1.0
-// date:     03.27.25 
+// date:     04.20.25 
 
 
 // sorts objects by number, moves blanks to end
@@ -286,6 +286,36 @@ function replaceDuplicate(obj, newValue) {
     }
   }
   return obj; // No duplicates found
+};
+
+
+// Merge objects in an array with the same "key" value
+function mergeObjectsWithSameValue(arr, key) {
+  const merged = {};
+  arr.forEach(obj => {
+      const value = obj[key];
+      if (merged[value]) {
+        Object.assign(merged[value], obj);
+      } else {
+        merged[value] = obj;
+      }
+  });
+  return Object.values(merged);
+};
+
+
+// Swap keyToKeep value with keyToReplace and drop both
+// original items in the object
+function replaceKeyWithValue(arr, keyToKeep, keyToReplace) {
+  return arr.map(obj => {
+      if (obj.hasOwnProperty(keyToReplace)) {
+        const value = obj[keyToKeep];
+        obj[value] = obj[keyToReplace];
+        delete obj[keyToKeep];
+        delete obj[keyToReplace];
+      }
+      return obj;
+  });
 };
 
 

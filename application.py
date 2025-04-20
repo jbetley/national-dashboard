@@ -4,10 +4,7 @@
 ############################################
 # author:   jbetley (https://github.com/jbetley)
 # version:  1.0  # noqa: ERA001
-# date:     03/29/25
-
-# NOTE: global replace "app" with "application" before loading
-# to server. also rename app.py to application.py
+# date:     04/20/25
 
 import os
 

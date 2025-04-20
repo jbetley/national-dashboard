@@ -4,7 +4,7 @@
 ############################################
 # author:   jbetley (https://github.com/jbetley)
 # version:  1.0  # noqa: ERA001
-# date:     03/29/25
+# date:     04/20/25
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -57,7 +57,7 @@ def get_state_dropdown():
     params = {"id": ""}
     q = text(
         """
-        SELECT StateAbbreviation, StateFull, StateDistrictName, TitleI
+        SELECT StateAbbreviation, StateFull, DistrictName, TitleI
             FROM districts
         """,
     )
@@ -93,7 +93,7 @@ def get_single_district_data(school_name):
         """
         SELECT *
             FROM districts
-            WHERE StateDistrictName = :id
+            WHERE DistrictName = :id
         """,
     )
 
@@ -107,7 +107,7 @@ def get_single_district_data(school_name):
 def get_attendance_data(school_name):
 
     params = {"id": school_name}
-    print(params)
+
     w = text(
         """
         SELECT *

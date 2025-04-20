@@ -2,7 +2,7 @@
 // table processing functions
 // author:   jbetley (https://github.com/jbetley)
 // version:  0.9
-// date:     03/27/25
+// date:     04/20/25
 
 
 // div fade out/in; duration is ms; default is fade out,
@@ -260,7 +260,7 @@ function districtInfoTable(data, id) {
             if (col==0) {
                td.appendChild(document.createTextNode('District:'));
             } else  {
-               const nameID = data['State District Name'] + " (ID: " + data['State District ID'] + ")";
+               const nameID = data['District Name'] + " (ID: " + data['District ID'] + ")";
                td.appendChild(document.createTextNode(nameID));
             }
          }
@@ -323,6 +323,18 @@ function moneyFormatter(params) {
       var sansDec = val.toFixed(2);
       var formatted = sansDec.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       return '$ '+ `${formatted}`;
+   }
+};
+
+
+function percentFormatter(params) {
+   if (params.value == undefined) {
+      return '\u2014'
+   }
+   else {
+      const val = params.value * 100;
+      var formatted = val.toFixed(2);
+      return `${formatted}` + '%';
    }
 };
 

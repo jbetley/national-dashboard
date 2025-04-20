@@ -124,6 +124,10 @@ button:not(:disabled) {
   display: flex;
 }
 
+.top {
+  display: flex;
+}
+
 .column, .columns {
   float: left;
 }
@@ -289,7 +293,7 @@ select:focus {
 /* Grid */
 .parent {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(1, 1fr);
   grid-column-gap: 0px;
   grid-row-gap: 0px;
@@ -302,39 +306,31 @@ select:focus {
 }
 
 .district-grid {  
-  grid-area: 1 / 4 / span 1 / span 5;
+  grid-area: 1 / 4 / span 1 / span 3;
   margin: 1em;
   grid-gap: .5em;
 }
 
 .title-grid {  
-  grid-area: 2 / 1 / span 1 / span 5;
+  grid-area: 2 / 1 / span 1 / span 6;
   margin: 1em;
   grid-gap: .5em;
 }
 
 .attendance-grid {  
-  grid-area: 2 / 1 / span 1 / span 5;
+  grid-area: 2 / 1 / span 1 / span 3;
   margin: 1em;
   grid-gap: .5em;
 }
 
-/* Containers */
-.table-box {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  box-shadow: 2px 2px 2px lightgrey;
-  padding: 15px;
-  align-items: center;
-  border-radius: .5em;
-  background-color: #fff;
-  height: 600px;
+.absenteeism-grid {  
+  grid-area: 2 / 4 / span 1 / span 6;
+  margin: 1em;
+  grid-gap: .5em;
 }
 
+
+/* Containers */
 .state-box {
   height: 150px;
   display: -webkit-box;
@@ -369,11 +365,37 @@ select:focus {
   background-color: #fff;
 }
 
-.empty-box {
+.table-box {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  /* display: flex; */
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  box-shadow: 2px 2px 2px lightgrey;
+  padding: 15px;
+  align-items: center;
+  border-radius: .5em;
+  background-color: #fff;
+  height: 600px;
+}
+
+.header-box {
   height: 20px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-box {
+  height: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  /* display: flex; */
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
