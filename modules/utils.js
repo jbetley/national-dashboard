@@ -269,6 +269,15 @@ function orderByProperty(arr, property, order) {
   return arr;
 };
 
+// Get most recent year from keys
+function getYearList(data) {
+  let cols = Object.keys(data[0]);
+  let years = cols.filter(item => !["District Name", "District ID"].includes(item));
+  years.sort()
+  years.reverse()
+
+  return years
+}
 
 // replace the first duplicate value in the passed 'obj'
 // with the passed 'newValue'

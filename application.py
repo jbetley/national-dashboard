@@ -73,8 +73,7 @@ def load_all_district_data():
     data = request.get_json()
 
     district_data = get_all_district_data(data)
-   
-    print(district_data)
+
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in district_data.to_dict(orient="records")
@@ -87,17 +86,11 @@ def load_attendance_data():
     data = request.get_json()
     attendance_data = get_attendance_data(data)
 
-    # filename98 = "pre.csv"
-    # attendance_data.to_csv(filename98, index=False)
-    
     # drop rows where both values are nan
     attendance_data = attendance_data.dropna(
         subset=["Attendance Rate", "Chronic Absenteeism"], how='all'
     )
     
-    # filename99 = "post.csv"
-    # attendance_data.to_csv(filename99, index=False)
-
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in attendance_data.to_dict(orient="records")

@@ -2,7 +2,7 @@
   stylesheet
   author:   jbetley (https://github.com/jbetley)
   version:  0.9
-  date:     03/27/25
+  date:     04/20/25
 */
 
 html, html a {
@@ -67,13 +67,7 @@ svg {
   border-radius: 5px;
 }
 
-label {
-  margin: 10px;
-  font-size: .75rem;
-  font-weight: 600;
-  color:  steelblue;
-}
-
+/* Notes & Messages */
 .note {
   padding: 2px;
   border: 1px solid steelblue;
@@ -88,6 +82,15 @@ label {
   font-weight: 400;
   padding-top: 5px;
   text-align: center;
+}
+
+.nodata-msg {
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: steelblue;
+  font-weight: 700;
+  text-align: center;
+  width: inherit;
 }
 
 /* Navigation */
@@ -121,10 +124,6 @@ button:not(:disabled) {
 }
 
 .row {
-  display: flex;
-}
-
-.top {
   display: flex;
 }
 
@@ -224,19 +223,6 @@ button:not(:disabled) {
   width: 65px;
 }
 
-/* .tab.analysis, .tab.analysis.active, .tab.analysis:hover {
-  width: 105px;
-}
-
-.tab.k8info, .tab.k8info.active, .tab.k8info:hover {
-  width: 85px;
-}
-
-.tab.hsinfo, .tab.hsinfo:active, .tab.hsinfo:hover {
-  width: 105px;
-  height: 40px;
-} */
-
 .panel-container  {
   border: solid #c0c1c7 1px;
   padding: 10px;
@@ -244,7 +230,7 @@ button:not(:disabled) {
   -moz-border-radius: .5em;
   -webkit-border-radius: .5em;
   height: 100%;
-  width: 100%;
+  /* width: 100%; */
 }
 
 /* Dropdown Menu */
@@ -256,10 +242,6 @@ button:not(:disabled) {
  margin: 5px;
  padding: .2em;
 }
-
-/* #corpSelect {
-  width: 45%
-} */
 
 select {
   background: none;
@@ -274,9 +256,6 @@ select {
   cursor: pointer;
 }
 
-/* #corpSelect > select {
-  width: 45%
-} */
 select option {
   color: steelblue;
 }
@@ -292,6 +271,7 @@ select:focus {
 
 /* Grid */
 .parent {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(1, 1fr);
@@ -300,13 +280,13 @@ select:focus {
 }
 
 .state-grid {  
-  grid-area: 1 / 1 / span 1 / span 3;
+  grid-area: 1 / 1 / span 1 / span 4;
   margin: 1em;
   grid-gap: .5em;
 }
 
 .district-grid {  
-  grid-area: 1 / 4 / span 1 / span 3;
+  grid-area: 1 / 5 / span 1 / span 2;
   margin: 1em;
   grid-gap: .5em;
 }
@@ -331,10 +311,24 @@ select:focus {
 
 
 /* Containers */
+.header-box {
+  height: 20px;
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.persistent {
+  display: flex;
+}
+
 .state-box {
   height: 150px;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
   display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
@@ -349,8 +343,8 @@ select:focus {
 
 .district-box {
   height:150px;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
   display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
@@ -366,9 +360,8 @@ select:focus {
 }
 
 .table-box {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  /* display: flex; */
+  /* display: -webkit-box;
+  display: -ms-flexbox; */
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -380,43 +373,10 @@ select:focus {
   height: 600px;
 }
 
-.header-box {
-  height: 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  align-items: center;
-}
-
-.empty-box {
-  height: 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  /* display: flex; */
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  align-items: center;
-}
-
 /* Tables */
-#state-info-table {
+/* #district-info-table {
   display: flex;
-}
-
-#district-info-table {
-  display: flex;
-}
-
-.state-box-state-info {
-  width: 100%;
-  height:auto;
-  text-align: center; 
-  display:inline-table;
-}
+} */
 
 .state-table-1 {
   font-family: 'Inter', sans-serif;
@@ -482,6 +442,7 @@ select:focus {
   text-align: left; 
   font-weight: 500;
 }
+
 .state-table-2 tr:first-child {
   font-weight: 500;
 }
@@ -519,26 +480,31 @@ select:focus {
   --ag-header-background-color: #fff;
   --ag-odd-row-background-color: rgb(238, 238, 238);
 }
+
 .ag-theme-quartz .ag-cell-value {
   font-size: 10px;
   font-weight: 600;
   line-height: 15px !important;
   word-break: normal; /* prevent words from breaking */
 }
+
 .ag-theme-quartz .ag-row-odd {
   background-color: var(--ag-odd-row-background-color);
 }
+
 .ag-center-aligned-cell-with-border {
   display: flex;
   justify-content: center;
   align-items: center;
   border-right: 1px solid steelblue !important;
 }
+
 .ag-center-aligned-cell {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .ag-left-aligned-cell {
   display: flex;
   align-items: center;
@@ -547,14 +513,15 @@ select:focus {
 
 /* Currently affecting all headers */ 
 /* TODO: Center header text not working */
-
 .ag-theme-quartz .ag-header {
   font-family: 'Inter', sans-serif;
 }
+
 .ag-theme-quartz .ag-header-group-cell {
   font-weight: normal;
   font-size: 12px;
 }
+
 .ag-theme-quartz .ag-header-cell {
   font-weight: 600;
   font-size: 10px;
@@ -565,8 +532,6 @@ select:focus {
 @media (max-width: 940px) 
  {
   .ag-header-cell {
-    /* writing-mode: vertical-lr;
-    text-orientation: upright; */
     font-size: 11px;
     padding: 8px;
   }

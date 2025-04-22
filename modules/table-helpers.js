@@ -41,6 +41,42 @@ function fadeDiv(element, duration, fadeOut = true) {
    requestAnimationFrame(animate);
 };
 
+// creates blank table with label
+function blankTable(id) {
+
+   let tableDiv = document.getElementById(id);
+
+   //fade out (ms)
+   fadeDiv(tableDiv, 250);
+
+   tableDiv.innerHTML = '';
+   
+   var parentWidth = document.getElementById('attendanceTable').getBoundingClientRect().width;
+
+   var table = document.createElement('TABLE');
+   table.border = '0';
+   table.width = parentWidth;
+
+   var tableBody = document.createElement('TBODY');
+   table.appendChild(tableBody);
+
+   var tr = document.createElement('TR');
+   tableBody.appendChild(tr);
+
+   var td = document.createElement('TD');
+
+   td.appendChild(document.createTextNode('No Data to Display.'));
+
+   td.height = '50';
+   td.classList.add("nodata-msg")
+   tr.appendChild(td);
+   
+   setTimeout(() => {
+      tableDiv.appendChild(table);
+      fadeDiv(tableDiv, 250, false);
+      }, 300);
+};
+
 
 function stateInfoTable(data, id) {
 
@@ -110,6 +146,10 @@ function stateInfoTable(data, id) {
                }
             }
             else {
+               if (data['Written Notice'].length > 5) {
+                  console.log("LONG")
+                  console.log(data['Written Notice'])
+               }
                if (j==0) {
                   td.appendChild(document.createTextNode('Written Notice Required:'));
                }
@@ -243,7 +283,7 @@ function districtInfoTable(data, id) {
    var tableBody = document.createElement('TBODY');
    table.appendChild(tableBody);
 
-   for (var row = 0; row < 5; row++) {
+   for (var row = 0; row < 7; row++) {
       var tr = document.createElement('TR');
       tableBody.appendChild(tr);
 
@@ -260,7 +300,7 @@ function districtInfoTable(data, id) {
             if (col==0) {
                td.appendChild(document.createTextNode('District:'));
             } else  {
-               const nameID = data['District Name'] + " (ID: " + data['District ID'] + ")";
+               const nameID = data['District Name'] + " (ID: " + data['ID'] + ")";
                td.appendChild(document.createTextNode(nameID));
             }
          }
@@ -292,13 +332,42 @@ function districtInfoTable(data, id) {
             }
          }
          else if (row == 4) {
-            if (col==0) {
-               td.appendChild(document.createTextNode('Traditional / Charter Schools:'));
+            let type;
+// TODO: FIX SCHOOL TYPE TO BE MORE GRANULAR
+            if (data['Type'].includes('Charter')) {
+               type = 'Charter School'
             } else {
-               const schoolNums = data['Number Public Schools'] + " / " + data['Number Charter Schools'];
-               td.appendChild(document.createTextNode(schoolNums));
+               type = 'School District'
+            }
+            if (col==0) {
+               td.appendChild(document.createTextNode('School Type:'));
+            } else {
+               td.appendChild(document.createTextNode(type));
             }
          }
+         else if (row == 5) {
+            let name, val;
+
+            if (data['Type'].includes('Charter')) {
+               name = ''
+               val = ''
+            } else {
+               name = 'Traditional / Charter:'
+               val = data['Number Public Schools'] + " / " + data['Number Charter Schools'];
+            }
+            if (col==0) {
+               td.appendChild(document.createTextNode(name));
+            } else {
+               td.appendChild(document.createTextNode(val));
+            }
+         }
+         else if (row == 6) {
+            if (col==0) {
+               td.appendChild(document.createTextNode("Total Enrollment:"));
+            } else {
+               td.appendChild(document.createTextNode(data["Enrollment"]));
+            }
+         }         
          tr.appendChild(td);
       }
    }

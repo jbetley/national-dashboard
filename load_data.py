@@ -80,8 +80,12 @@ def get_all_district_data(state_id):
 
     district_data = run_query(w, params)
     
+    district_data["Title I"] = district_data["Title I"].astype(float)
     district_data = district_data.sort_values(by="Title I", ascending=False)
-
+    
+    district_data = district_data.rename(columns={"District ID": "ID"})
+    district_data["ID"] = district_data["ID"].astype(str)
+        
     return district_data.reset_index(drop=True)
 
 
@@ -99,8 +103,9 @@ def get_single_district_data(school_name):
 
     district_data = run_query(w, params)
 
-    district_data = district_data.sort_values(by="Title I", ascending=False)
-
+    district_data = district_data.rename(columns={"District ID": "ID"})
+    district_data["ID"] = district_data["ID"].astype(str)
+        
     return district_data.reset_index(drop=True)
 
 
@@ -118,7 +123,8 @@ def get_attendance_data(school_name):
 
     attendance_data = run_query(w, params)
 
-    attendance_data = attendance_data.sort_values(by="Attendance Rate", ascending=False)
+    attendance_data = attendance_data.rename(columns={"District ID": "ID"})
+    attendance_data["ID"] = attendance_data["ID"].astype(str)
 
     return attendance_data.reset_index(drop=True)
 
