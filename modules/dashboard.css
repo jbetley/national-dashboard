@@ -1,7 +1,7 @@
 /* State and District Information Dashboard
   stylesheet
   author:   jbetley (https://github.com/jbetley)
-  version:  0.9
+  version:  1.01
   date:     04/20/25
 */
 
@@ -230,7 +230,6 @@ button:not(:disabled) {
   -moz-border-radius: .5em;
   -webkit-border-radius: .5em;
   height: 100%;
-  /* width: 100%; */
 }
 
 /* Dropdown Menu */
@@ -309,7 +308,6 @@ select:focus {
   grid-gap: .5em;
 }
 
-
 /* Containers */
 .header-box {
   height: 20px;
@@ -352,7 +350,7 @@ select:focus {
   box-shadow: 2px 2px 2px lightgrey;
   padding: 15px;
   margin-bottom: 5px;
-  align-items: center;
+  /* align-items: center; */
   margin-left: auto;
   margin-right: auto;
   border-radius: .5em;
@@ -374,10 +372,6 @@ select:focus {
 }
 
 /* Tables */
-/* #district-info-table {
-  display: flex;
-} */
-
 .state-table-1 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
@@ -511,8 +505,7 @@ select:focus {
   text-align: left;
 }
 
-/* Currently affecting all headers */ 
-/* TODO: Center header text not working */
+/* Affecting all headers */ 
 .ag-theme-quartz .ag-header {
   font-family: 'Inter', sans-serif;
 }

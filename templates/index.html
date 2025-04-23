@@ -82,31 +82,17 @@
 
 // National State and School District Info
 // author:   jbetley (https://github.com/jbetley)
-// version:  1.0
-// date:     03.29.25
+// version:  1.01
+// date:     04.20.25
 
 const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
 var allStatesObj = await allStatesResponse.json();
 
-var tableGridApi,
+var titleGridApi,
    attendanceGridApi,
    absenteeismGridApi,
    selectedRow;
-
-// TODO: TRYING TO FIND FLICKERING
-const targetNode = document.getElementById('state-info-table-1'); // Element to observe
-   const config = { attributes: true, attributeFilter: ['class'] }; // Observe class attribute changes
-
-   const observer = new MutationObserver((mutationsList) => {
-   for (const mutation of mutationsList) {
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-         console.log('Class attribute changed:', mutation.target.className);
-      }
-   }
-   });
-   observer.observe(targetNode, config);
-// TODO: TRYING TO FIND FLICKERING
 
 const attendanceContainerLabel = document.getElementById("container-attendance-label");
 const attendanceContainer = document.getElementById("container-attendance-table");
@@ -116,6 +102,7 @@ const absenteeismContainer = document.getElementById("container-absenteeism-tabl
 
 const titleContainerLabel = document.getElementById("container-title-label");
 const titleContainer = document.getElementById("container-title-table");
+
 
 async function getStateData(select) {
    const data = await fetch(`${window.origin}/states`, {
@@ -214,6 +201,8 @@ async function setStateList() {
 
    removeOptions(stateSelection);
 
+   sortArrayOfObjsByKey(stateDropdown);
+
    stateDropdown.forEach(obj => {
       Object.entries(obj).forEach(([key, value]) => {
          stateSelection.appendChild(new Option(value, key));
@@ -234,7 +223,11 @@ async function setDistrictList() {
 
    const highest = sortedDistricts.shift();
 
-   sortedDistricts.sort((a, b) => a["District Name"].toLowerCase() > b["District Name"].toLowerCase() ? 1 : -1);
+   sortedDistricts.sort(
+      (a, b) => a["District Name"].toLowerCase() > 
+         b["District Name"].toLowerCase() ? 1 : -1
+   );
+
    const districtObj = sortedDistricts.map(obj => ({ name: obj["District Name"]}));
 
    // a different way to get unique values (see setStateList)
@@ -345,7 +338,6 @@ function createTitleTable(tableData, tableID) {
    return options
 };
 
-
 var stateSelection = document.getElementById("stateSelect");
 
 stateSelection.addEventListener("change", async () => {
@@ -364,6 +356,7 @@ stateSelection.addEventListener("change", async () => {
 
 
 var districtSelection = document.getElementById("districtSelect");
+
 districtSelection.addEventListener("change", async () => {
    getSingleDistrictData(districtSelection.value);
 });
@@ -391,6 +384,7 @@ if (tabnavigation.addEventListener) {
 else {
    tabnavigation.addEventListener('onclick',navigateHandler);
 };
+
 
 async function navigateHandler(e) {
    e = e || window.event;
@@ -499,21 +493,19 @@ async function displayDistrictTitleTable(data) {
       titleContainer.style.display = "flex";
       titleContainerLabel.style.display = "flex";
 
-      const tableGridDiv = document.querySelector("#titleTable");
+      const titleGridDiv = document.querySelector("#titleTable");
       
-      // tableGridDiv.style.setProperty("height", 600);
-      
-      tableGridApi = agGrid.createGrid(
-            tableGridDiv, tableOptions
+      titleGridApi = agGrid.createGrid(
+            titleGridDiv, tableOptions
          );
          displayDistrictTitleTable.initialize = true;
    }
    else {
 
-      tableGridApi.setGridOption(
+      titleGridApi.setGridOption(
             "columnDefs", tableOptions.columnDefs
          );
-      tableGridApi.setGridOption("rowData", tabledata);
+      titleGridApi.setGridOption("rowData", tabledata);
    }
 };
 
@@ -529,17 +521,92 @@ async function displayAttendanceTables(data) {
    let absenteeismLabel = document.getElementById("container-absenteeism-label");
    absenteeismLabel.firstChild.textContent = stateName + " Chronic Absenteeism";
 
-   console.log(attendanceGridApi)
+   var emptyTableOptions = {
+      columnDefs: [
+         {
+            headerName: "District Name",
+            field: "District Name",
+            resizable: false,
+            autoHeight: true,
+            minWidth: 150,
+            maxWidth: 150
+         },
+         {
+            headerName: "ID",
+            field: "ID",
+            flex: 1,
+            resizable: false,
+            headerClass: "text-center"
+         },
+         {
+            headerName: "2024",
+            field: "2024",
+            flex: 1,
+            resizable: false,
+            headerClass: "text-center"
+         },
+         {
+            headerName: "2023",
+            field: "2023",
+            flex: 1,
+            resizable: false,
+            headerClass: "text-center"
+         },
+         {
+            headerName: "2022",
+            field: "2022",
+            flex: 1,
+            resizable: false,
+            headerClass: "text-center"
+         },
+      ],
+      rowData: [],
+      enableBrowserTooltips: false,
+      noRowsOverlayComponent: CustomNoRowsOverlay,
+      noRowsOverlayComponentParams: {
+         noRowsMessageFunc: () =>
+            "No Data to Display.",
+      },
+   };
 
    if (!Array.isArray(data) || !data.length) {
-      if (attendanceGridApi == 'undefined') {
-         console.log("CREATE BLANK TANBLE")
-      }
-      attendanceGridApi.setGridOption("rowData", [])
-      attendanceGridApi.showNoRowsOverlay();
 
-      absenteeismGridApi.setGridOption("rowData", [])
-      absenteeismGridApi.showNoRowsOverlay();
+      // this is only triggered if the first time the attendance tab is selected
+      // the selected state has no data.
+      if (attendanceGridApi == undefined) {
+
+         const attendanceTableGridDiv = document.querySelector("#attendanceTable");
+         
+         emptyTableOptions.gridId = 'attendanceTable';
+
+         attendanceGridApi = agGrid.createGrid(
+            attendanceTableGridDiv, emptyTableOptions
+            );
+         
+         // now that grid has been created we need to flip this
+         displayAttendanceTables.attendanceInit = true;
+
+         } else {
+         attendanceGridApi.setGridOption("rowData", [])
+         attendanceGridApi.showNoRowsOverlay();
+      }
+
+      if (absenteeismGridApi == undefined) {
+
+         const absenteeismTableGridDiv = document.querySelector("#absenteeismTable");
+         
+         emptyTableOptions.gridId = 'absenteeismTable';
+         
+         absenteeismGridApi = agGrid.createGrid(
+            absenteeismTableGridDiv, emptyTableOptions
+            );
+
+         displayAttendanceTables.absenteeismInit = true;
+
+      } else {
+         absenteeismGridApi.setGridOption("rowData", [])
+         absenteeismGridApi.showNoRowsOverlay();
+      }
    }
    else {
       
@@ -549,10 +616,25 @@ async function displayAttendanceTables(data) {
       // if all values are undefined, the Check variables will also be undefined
       attendanceCheck = attendanceFiltered.find(obj => typeof obj["Attendance Rate"] != 'undefined');
 
-      console.log(attendanceGridApi)
       if (attendanceCheck == undefined) {
-         attendanceGridApi.setGridOption("rowData", [])
-         attendanceGridApi.showNoRowsOverlay();
+
+         if (attendanceGridApi == undefined) {
+
+            const attendanceTableGridDiv = document.querySelector("#attendanceTable");
+            
+            emptyTableOptions.gridId = 'attendanceTable';
+            
+            attendanceGridApi = agGrid.createGrid(
+               attendanceTableGridDiv, emptyTableOptions
+
+               );
+            
+            displayAttendanceTables.attendanceInit = true;
+
+         } else {
+            attendanceGridApi.setGridOption("rowData", [])
+            attendanceGridApi.showNoRowsOverlay();
+         }
       } else {
 
          // drop objects (Years) with null values - note if a district has 
@@ -574,13 +656,15 @@ async function displayAttendanceTables(data) {
          let attendanceTableOptions = createTitleTable(attendanceSorted, "attendanceTable");
 
          if (!displayAttendanceTables.attendanceInit) {
-            
+
             const attendanceTableGridDiv = document.querySelector("#attendanceTable");
-            
+
             attendanceGridApi = agGrid.createGrid(
                attendanceTableGridDiv, attendanceTableOptions
                );
+
             displayAttendanceTables.attendanceInit = true;
+
          }
          else {
             attendanceGridApi.setGridOption(
@@ -596,11 +680,24 @@ async function displayAttendanceTables(data) {
       absenteeismCheck = absenteeismFiltered.find(obj => typeof obj["Chronic Absenteeism"] != 'undefined');
 
       if (absenteeismCheck == undefined) {
-         // blankTable("absenteeismTable")
-         absenteeismGridApi.setGridOption("rowData", [])
-         absenteeismGridApi.showNoRowsOverlay();
+         if (absenteeismGridApi == undefined) {
+
+            const absenteeismTableGridDiv = document.querySelector("#absenteeismTable");
+
+            emptyTableOptions.gridId = 'absenteeismTable';
+            
+            absenteeismGridApi = agGrid.createGrid(
+               absenteeismTableGridDiv, emptyTableOptions
+               );
+
+            displayAttendanceTables.absenteeismInit = true;               
+         
+         } else {
+            absenteeismGridApi.setGridOption("rowData", [])
+            absenteeismGridApi.showNoRowsOverlay();
+         }
       } else {
-         // CA
+
          let absenteeismCleaned = absenteeismFiltered.filter(item => item["Chronic Absenteeism"] !== undefined)
          let absenteeismRenamed = replaceKeyWithValue(absenteeismCleaned, 'Year', 'Chronic Absenteeism');
          let absenteeismMerged = mergeObjectsWithSameValue(absenteeismRenamed, "ID")
@@ -618,6 +715,7 @@ async function displayAttendanceTables(data) {
                );
 
             displayAttendanceTables.absenteeismInit = true;
+            
          }
          else {
             absenteeismGridApi.setGridOption(

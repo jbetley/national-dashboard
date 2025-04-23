@@ -3,7 +3,7 @@
 # main application & backend               #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  1.0  # noqa: ERA001
+# version:  1.01  # noqa: ERA001
 # date:     04/20/25
 
 import os

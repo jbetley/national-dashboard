@@ -3,7 +3,7 @@
 # Database Queries (SQLite)                #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  1.0  # noqa: ERA001
+# version:  1.01  # noqa: ERA001
 # date:     04/20/25
 
 import pandas as pd
@@ -69,7 +69,6 @@ def get_all_district_data(state_id):
 
     params = {"id": state_id}
 
-    print(params)
     w = text(
         """
         SELECT *

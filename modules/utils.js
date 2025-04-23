@@ -1,6 +1,6 @@
 // general utility functions
 // author:   jbetley (https://github.com/jbetley)
-// version:  1.0
+// version:  1.01
 // date:     04.20.25 
 
 
@@ -200,6 +200,13 @@ function sortObj(obj) {
 };
 
 
+function sortArrayOfObjsByKey(obj) {
+  return obj.sort(function(a,b){
+    return (Object.keys(a)[0].toLowerCase() > Object.keys(b)[0].toLowerCase()) - 0.5;
+   });
+};
+
+
 // returns true if sum of all values is either Nan/Null or 0
 function isValid(obj) {
   let sum = Object.values(obj).reduce((a, b) => Number(a) + Number(b), 0);
@@ -269,7 +276,8 @@ function orderByProperty(arr, property, order) {
   return arr;
 };
 
-// Get most recent year from keys
+
+// Get most recent year from array of object keys
 function getYearList(data) {
   let cols = Object.keys(data[0]);
   let years = cols.filter(item => !["District Name", "District ID"].includes(item));
@@ -278,6 +286,7 @@ function getYearList(data) {
 
   return years
 }
+
 
 // replace the first duplicate value in the passed 'obj'
 // with the passed 'newValue'

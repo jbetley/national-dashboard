@@ -1,7 +1,7 @@
 // State and District Information Dashboard
 // table processing functions
 // author:   jbetley (https://github.com/jbetley)
-// version:  0.9
+// version:  1.01
 // date:     04/20/25
 
 
@@ -34,48 +34,46 @@ function fadeDiv(element, duration, fadeOut = true) {
       }
    }
    if (!fadeOut) {
-// TODO: TESTING FLEX
       element.style.display = 'flex';
-      // element.style.display = 'block';
    }
    requestAnimationFrame(animate);
 };
 
-// creates blank table with label
-function blankTable(id) {
 
-   let tableDiv = document.getElementById(id);
+// // creates blank table with label
+// function blankTable(id) {
 
-   //fade out (ms)
-   fadeDiv(tableDiv, 250);
+//    let tableDiv = document.getElementById(id);
 
-   tableDiv.innerHTML = '';
+//    fadeDiv(tableDiv, 250);
+
+//    tableDiv.innerHTML = '';
    
-   var parentWidth = document.getElementById('attendanceTable').getBoundingClientRect().width;
+//    var parentWidth = document.getElementById('attendanceTable').getBoundingClientRect().width;
 
-   var table = document.createElement('TABLE');
-   table.border = '0';
-   table.width = parentWidth;
+//    var table = document.createElement('TABLE');
+//    table.border = '0';
+//    table.width = parentWidth;
 
-   var tableBody = document.createElement('TBODY');
-   table.appendChild(tableBody);
+//    var tableBody = document.createElement('TBODY');
+//    table.appendChild(tableBody);
 
-   var tr = document.createElement('TR');
-   tableBody.appendChild(tr);
+//    var tr = document.createElement('TR');
+//    tableBody.appendChild(tr);
 
-   var td = document.createElement('TD');
+//    var td = document.createElement('TD');
 
-   td.appendChild(document.createTextNode('No Data to Display.'));
+//    td.appendChild(document.createTextNode('No Data to Display.'));
 
-   td.height = '50';
-   td.classList.add("nodata-msg")
-   tr.appendChild(td);
+//    td.height = '50';
+//    td.classList.add("nodata-msg")
+//    tr.appendChild(td);
    
-   setTimeout(() => {
-      tableDiv.appendChild(table);
-      fadeDiv(tableDiv, 250, false);
-      }, 300);
-};
+//    setTimeout(() => {
+//       tableDiv.appendChild(table);
+//       fadeDiv(tableDiv, 250, false);
+//       }, 300);
+// };
 
 
 function stateInfoTable(data, id) {
@@ -104,7 +102,6 @@ function stateInfoTable(data, id) {
             } else {
                td.width = '50';
             }
-
             td.height = '12';
 
             if (i==0) {
@@ -168,8 +165,8 @@ function stateInfoTable(data, id) {
       // the value in the allocations table.
       const labelDiv = document.getElementById("state-label");
       const labelDivWidth = window.getComputedStyle(labelDiv).width;
-      let tr = document.createElement('TR');
 
+      let tr = document.createElement('TR');
       tableBody.appendChild(tr);
       let td = document.createElement('TD');
       td.height = '120';
@@ -250,6 +247,7 @@ function allocationsTable(object, id) {
          }
       }
    } else {
+
       // Empty Table
       const labelDiv = document.getElementById("state-label");
       const labelDivWidth = window.getComputedStyle(labelDiv).width;
@@ -262,6 +260,7 @@ function allocationsTable(object, id) {
       td.style.verticalAlign = 'middle';
       td.appendChild(document.createTextNode('No Data.'));
       tr.appendChild(td);
+
    };
 
    allocationsTableDiv.appendChild(table);
@@ -272,7 +271,6 @@ function districtInfoTable(data, id) {
 
    let districtInfoTableDiv = document.getElementById(id);
 
-   //fade out (ms)
    fadeDiv(districtInfoTableDiv, 250);
 
    districtInfoTableDiv.innerHTML = '';
@@ -347,7 +345,6 @@ function districtInfoTable(data, id) {
          }
          else if (row == 5) {
             let name, val;
-
             if (data['Type'].includes('Charter')) {
                name = ''
                val = ''
@@ -372,10 +369,9 @@ function districtInfoTable(data, id) {
       }
    }
    
-   // fade in
-   // NOTE: timeout interval must be at least equal to the fade duration, if it
-   // is less than the fade duration, the animation will trigger one too many
-   // times causing the div to remain faded out
+   // Fade in. The timeout interval must be at least equal to the fade out
+   // duration, if it is less than the fade duration, the animation will
+   // trigger one too many times causing the div to remain faded out
    setTimeout(() => {
       districtInfoTableDiv.appendChild(table);
       fadeDiv(districtInfoTableDiv, 250, false);
@@ -383,6 +379,7 @@ function districtInfoTable(data, id) {
 };
 
 
+// Table Formatting Functions //
 function moneyFormatter(params) {
    if (params.value == undefined) {
       return '\u2014'

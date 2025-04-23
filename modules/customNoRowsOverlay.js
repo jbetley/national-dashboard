@@ -1,3 +1,5 @@
+
+// Custom class for Ag Grid to change the message for empty tables
 class CustomNoRowsOverlay  {
     eGui;
 
