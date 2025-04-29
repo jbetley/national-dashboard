@@ -93,6 +93,14 @@ svg {
   width: inherit;
 }
 
+.popup {
+  position: absolute;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1;
+}
+
 /* Navigation */
 button {
   border-radius: 0;

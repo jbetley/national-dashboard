@@ -144,8 +144,6 @@ function stateInfoTable(data, id) {
             }
             else {
                if (data['Written Notice'].length > 5) {
-                  console.log("LONG")
-                  console.log(data['Written Notice'])
                }
                if (j==0) {
                   td.appendChild(document.createTextNode('Written Notice Required:'));
@@ -177,6 +175,11 @@ function stateInfoTable(data, id) {
       tr.appendChild(td);
    }
 
+   if (table.rows.length > 3) {
+      table.rows[5].setAttribute('id', 'written-notice-popup')
+   }
+   // console.log(tr)
+   // td.setAttribute('id', 'written-notice-popup')
    stateInfoTableDiv.appendChild(table);
 };
 

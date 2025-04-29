@@ -49,6 +49,7 @@
                      <div class="state-table-1">
                         <div class="table-title" id="table-1-title"></div>
                         <div id="state-info-table-1"></div>
+                        <div class="popup" id="state-popup" style="display: none;"></div>
                      </div>
                      <div class="state-table-2">
                         <div class="table-title" id="table-2-title"></div>
@@ -337,6 +338,79 @@ function createTitleTable(tableData, tableID) {
    };
    return options
 };
+
+
+// TODO: HAVE AN ISSUE WITH ELEMENT NOT BEING CREATED WHEN WE FIRST
+// TRY TO ADD EVENTLISTENIR
+const popup = document.querySelector(".popup");
+
+const observer = new MutationObserver(function(mutations) {
+  for (let mutation of mutations) {
+    if (mutation.addedNodes) {
+      mutation.addedNodes.forEach(function(node) {
+
+// GOTTA BE A BETTER WAY TO DO THIS
+         if (node.hasChildNodes()) {
+            const grandChildren = node.childNodes[0].childNodes;
+            if (grandChildren) {
+               for (let i = 0; i < grandChildren.length; i++) {
+                  if (grandChildren[i].id == "written-notice-popup") {
+                     console.log("FOUND")
+                  }
+               }
+            }
+         }
+
+         if (node.id === 'written-notice-popup') {
+
+            console.log("NODE ADDED")
+            node.addEventListener("mouseenter", (event) => {
+
+               popup.style.display = "block";
+
+               popup.innerHTML = "WHAAATUPPP!"
+
+               //Position the popup near the trigger element
+               const triggerRect = triggerElement.getBoundingClientRect();
+               console.log(triggerRect)
+               popup.style.top = triggerRect.top - triggerRect.height + "px";
+               popup.style.left = triggerRect.left + "px";
+            });
+
+            node.addEventListener("mouseleave", () => {
+               popup.style.display = "none";
+            });
+
+            observer.disconnect(); // Stop observing after finding the element
+        }
+      });
+    }
+  }
+});
+observer.observe(document.body, {
+   attributes: true,
+   childList: true,
+   subtree: true,
+});
+
+// if (triggerElement) {
+
+//    triggerElement.addEventListener("mouseenter", (event) => {
+//    popup.style.display = "block";
+
+//    popup.innerHTML = "WHAAATUPPP!"
+//    //Position the popup near the trigger element
+//    const triggerRect = triggerElement.getBoundingClientRect();
+//    console.log(triggerRect)
+//    popup.style.top = triggerRect.top - triggerRect.height + "px";
+//    popup.style.left = triggerRect.left + "px";
+//    });
+
+//    triggerElement.addEventListener("mouseleave", () => {
+//    popup.style.display = "none";
+//    });
+// }
+
 
 var stateSelection = document.getElementById("stateSelect");
 
