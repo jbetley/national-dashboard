@@ -340,76 +340,29 @@ function createTitleTable(tableData, tableID) {
 };
 
 
-// TODO: HAVE AN ISSUE WITH ELEMENT NOT BEING CREATED WHEN WE FIRST
-// TRY TO ADD EVENTLISTENIR
+/* Popups */
 const popup = document.querySelector(".popup");
+let stateInfoTable1 = document.getElementById("state-info-table-1");
 
-const observer = new MutationObserver(function(mutations) {
-  for (let mutation of mutations) {
-    if (mutation.addedNodes) {
-      mutation.addedNodes.forEach(function(node) {
+stateInfoTable1.addEventListener("mouseover", function(event) {
 
-// GOTTA BE A BETTER WAY TO DO THIS
-         if (node.hasChildNodes()) {
-            const grandChildren = node.childNodes[0].childNodes;
-            if (grandChildren) {
-               for (let i = 0; i < grandChildren.length; i++) {
-                  if (grandChildren[i].id == "written-notice-popup") {
-                     console.log("FOUND")
-                  }
-               }
-            }
-         }
+    if (event.target.id.startsWith('popup-written-notice')) {
+      popup.style.display = "block";
 
-         if (node.id === 'written-notice-popup') {
+      popup.innerHTML = event.target.myCustomData['note']
 
-            console.log("NODE ADDED")
-            node.addEventListener("mouseenter", (event) => {
-
-               popup.style.display = "block";
-
-               popup.innerHTML = "WHAAATUPPP!"
-
-               //Position the popup near the trigger element
-               const triggerRect = triggerElement.getBoundingClientRect();
-               console.log(triggerRect)
-               popup.style.top = triggerRect.top - triggerRect.height + "px";
-               popup.style.left = triggerRect.left + "px";
-            });
-
-            node.addEventListener("mouseleave", () => {
-               popup.style.display = "none";
-            });
-
-            observer.disconnect(); // Stop observing after finding the element
-        }
-      });
+      const triggerRect = stateInfoTable1.getBoundingClientRect();
+      popup.style.top = triggerRect.top - triggerRect.height + "px";
+      popup.style.left = triggerRect.left + "px";
     }
-  }
-});
-observer.observe(document.body, {
-   attributes: true,
-   childList: true,
-   subtree: true,
+    else {
+      popup.style.display = "none";
+    }
 });
 
-// if (triggerElement) {
-
-//    triggerElement.addEventListener("mouseenter", (event) => {
-//    popup.style.display = "block";
-
-//    popup.innerHTML = "WHAAATUPPP!"
-//    //Position the popup near the trigger element
-//    const triggerRect = triggerElement.getBoundingClientRect();
-//    console.log(triggerRect)
-//    popup.style.top = triggerRect.top - triggerRect.height + "px";
-//    popup.style.left = triggerRect.left + "px";
-//    });
-
-//    triggerElement.addEventListener("mouseleave", () => {
-//    popup.style.display = "none";
-//    });
-// }
+stateInfoTable1.addEventListener("mouseleave", function(event) {
+   popup.style.display = "none";
+});
 
 
 var stateSelection = document.getElementById("stateSelect");

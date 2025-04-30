@@ -155,6 +155,17 @@ function stateInfoTable(data, id) {
             tr.appendChild(td);
          }
       }
+
+      // Set ids for the cells for which you want to add popups and
+      // attach the popup text as custom data
+      const cell1 = table.rows[5].cells[0];
+      const cell2 = table.rows[5].cells[1];
+
+      cell1.id = 'popup-written-notice-1';
+      cell1.myCustomData = { note: data['Notice Requirements'] };
+      cell2.id = 'popup-written-notice-2';
+      cell2.myCustomData = { note: data['Notice Requirements'] };
+
    } else {
 
       // Empty Table
@@ -175,11 +186,6 @@ function stateInfoTable(data, id) {
       tr.appendChild(td);
    }
 
-   if (table.rows.length > 3) {
-      table.rows[5].setAttribute('id', 'written-notice-popup')
-   }
-   // console.log(tr)
-   // td.setAttribute('id', 'written-notice-popup')
    stateInfoTableDiv.appendChild(table);
 };
 
