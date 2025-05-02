@@ -341,23 +341,40 @@ function createTitleTable(tableData, tableID) {
 
 
 /* Popups */
+// We attach the event listener to the table because the table element
+// because it is immediately present in the DOM, the children elements (
+// tbody, tr, td) do not exist until DisplayStateInfo is triggered.
+
+// TODO: Working on TR now, but still flickering on space between TDs
 const popup = document.querySelector(".popup");
+
 let stateInfoTable1 = document.getElementById("state-info-table-1");
 
 stateInfoTable1.addEventListener("mouseover", function(event) {
+   
+   const row = event.target.closest('tr');
 
-    if (event.target.id.startsWith('popup-written-notice')) {
-      popup.style.display = "block";
+   if (row != null) {
+      if (row.hasAttribute('id')) {
 
-      popup.innerHTML = event.target.myCustomData['note']
+   //  if (event.target.id.startsWith('popup-written-notice') |
+   //  event.target.id.startsWith('popup-charter-lea-notice')) {
 
-      const triggerRect = stateInfoTable1.getBoundingClientRect();
-      popup.style.top = triggerRect.top - triggerRect.height + "px";
-      popup.style.left = triggerRect.left + "px";
-    }
-    else {
-      popup.style.display = "none";
-    }
+      if (row.id.startsWith('popup-written-notice') |
+      row.id.startsWith('popup-charter-lea-notice')) {
+
+         console.log(row)
+         popup.style.display = "block";
+         popup.innerHTML = event.target.myCustomData['note']
+         const triggerRect = stateInfoTable1.getBoundingClientRect();
+         popup.style.top = triggerRect.top - triggerRect.height + "px";
+         popup.style.left = triggerRect.left + "px";
+      }
+      else {
+         popup.style.display = "none";
+      }
+   }
+}
 });
 
 stateInfoTable1.addEventListener("mouseleave", function(event) {

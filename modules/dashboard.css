@@ -332,9 +332,7 @@ select:focus {
 }
 
 .state-box {
-  height: 150px;
-  /* display: -webkit-box;
-  display: -ms-flexbox; */
+  height: 180px;
   display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
@@ -348,9 +346,7 @@ select:focus {
 }
 
 .district-box {
-  height:150px;
-  /* display: -webkit-box;
-  display: -ms-flexbox; */
+  height:180px;
   display: flex;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
@@ -358,7 +354,6 @@ select:focus {
   box-shadow: 2px 2px 2px lightgrey;
   padding: 15px;
   margin-bottom: 5px;
-  /* align-items: center; */
   margin-left: auto;
   margin-right: auto;
   border-radius: .5em;
@@ -366,8 +361,6 @@ select:focus {
 }
 
 .table-box {
-  /* display: -webkit-box;
-  display: -ms-flexbox; */
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -383,13 +376,13 @@ select:focus {
 .state-table-1 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
-  margin-top: -20px;
-  height: 120px;
+  height: 150px;
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
   margin-right: 5px;
   position: relative;
+  cursor: pointer;
 }
 
 .state-table-1 > .table-title {
@@ -409,7 +402,7 @@ select:focus {
   content: "";
   position: absolute;
   width: .5px;
-  right: 3%;
+  right: 1%;
   height: 100%;
   background: steelblue;
   top: 20%;
@@ -419,8 +412,8 @@ select:focus {
 .state-table-2 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
-  margin-top: -20px;
-  height: 120px;
+  margin-top: 30px;
+  height: 150px;
   font-size: 12px;
   font-weight: 400;
   border-radius: .5em;
@@ -451,7 +444,7 @@ select:focus {
 
 .district-table {
   padding: 5px;
-  height: 120px;
+  height: 150px;
   font-family: 'Inter', sans-serif;
   color: steelblue;
   font-size: 12px;

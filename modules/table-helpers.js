@@ -91,7 +91,7 @@ function stateInfoTable(data, id) {
 
    if (Object.entries(data).length > 0) {
 
-      for (var i = 0; i < 6; i++) {
+      for (var i = 0; i < 7; i++) {
          let tr = document.createElement('TR');
          tableBody.appendChild(tr);
 
@@ -128,13 +128,22 @@ function stateInfoTable(data, id) {
             }
             else if (i == 3) {
                if (j==0) {
+                  td.appendChild(document.createTextNode('Charters are LEA: '));
+                  td.style.fontWeight = 'bold';
+               }
+               else {
+                  td.appendChild(document.createTextNode(data['Charter LEA']));
+               }
+            }
+            else if (i == 4) {
+               if (j==0) {
                   td.appendChild(document.createTextNode('Voucher Program:'));
                }
                else {
                   td.appendChild(document.createTextNode(data['Voucher Program']));
                }
             }
-            else if (i == 4) {
+            else if (i == 5) {
                if (j==0) {
                   td.appendChild(document.createTextNode('ESA Program:'));
                }
@@ -147,6 +156,7 @@ function stateInfoTable(data, id) {
                }
                if (j==0) {
                   td.appendChild(document.createTextNode('Written Notice Required:'));
+                  td.style.fontWeight = 'bold';
                }
                else {
                   td.appendChild(document.createTextNode(data['Written Notice']));
@@ -158,13 +168,22 @@ function stateInfoTable(data, id) {
 
       // Set ids for the cells for which you want to add popups and
       // attach the popup text as custom data
-      const cell1 = table.rows[5].cells[0];
-      const cell2 = table.rows[5].cells[1];
+      let cell1 = table.rows[6].cells[0];
+      let cell2 = table.rows[6].cells[1];
+      let cell3 = table.rows[3].cells[0];
+      let cell4 = table.rows[3].cells[1];
 
       cell1.id = 'popup-written-notice-1';
       cell1.myCustomData = { note: data['Notice Requirements'] };
       cell2.id = 'popup-written-notice-2';
       cell2.myCustomData = { note: data['Notice Requirements'] };
+      cell3.id = 'popup-charter-lea-notice-1';
+      cell3.myCustomData = { note: data['Charter Notes'] };
+      cell4.id = 'popup-charter-lea-notice-2';
+      cell4.myCustomData = { note: data['Charter Notes'] };
+
+      table.rows[3].id = 'popup-charter-lea-notice'
+      table.rows[6].id = 'popup-written-notice'
 
    } else {
 
