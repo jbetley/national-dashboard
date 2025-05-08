@@ -5,6 +5,7 @@
   date:     04/20/25
 */
 
+/*** Page ***/
 html, html a {
   -webkit-font-smoothing: antialiased;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
@@ -16,28 +17,28 @@ body {
   color: steelblue;
   font-family: 'Inter', sans-serif;
   min-width: fit-content;
-/*  overflow-y: scroll; /* always show scrollbar to prevent pixel shift when changing tabs */
+/*  overflow-y: scroll;  always show scrollbar to prevent pixel shift when changing tabs */
   margin: 5px;
   background-color: #F2F2F2;
 }
 
+svg {
+  overflow: visible;  /* TODO */
+}
+
+/*** Headers and Labels ***/
 header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    min-height: 2vh;
-    width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 2vh;
+  width: 100%;
 }
 
 h3 {
-  text-align: center;
-  width: 100%;
-  margin-top: 10px;
-}
-
-/* TODO */
-svg {
-  overflow: visible;
+text-align: center;
+width: 100%;
+margin-top: 10px;
 }
 
 .label__header {
@@ -67,7 +68,7 @@ svg {
   border-radius: 5px;
 }
 
-/* Notes & Messages */
+/*** Notes, Messages, and Popups ***/
 .note {
   padding: 2px;
   border: 1px solid steelblue;
@@ -96,12 +97,16 @@ svg {
 .popup {
   position: absolute;
   background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
+  background-color: #ffffff;
+  border-radius: 5px;
+  font-weight: 600;
   padding: 10px;
   z-index: 1;
+  width: 100%;
 }
 
-/* Navigation */
+/*** Buttons ***/
 button {
   border-radius: 0;
 }
@@ -131,24 +136,30 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
-.row {
-  display: flex;
+.button-text {
+  clear: both;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: .8;
+  margin-right: 5px;
+  font-size: 12px;
+  /* vertical-align: bottom; */
 }
 
-.column, .columns {
-  float: left;
-}
-
-.twelve.columns {
-  width: 100%;
-  margin-left: 0;
-}
-
+/*** Navigation ***/
 .nav-container {
   display: grid;
   place-items: center;
   margin-top: 5px;
   margin-bottom: 10px;
+  width: 100%;
+}
+
+.nav-button-container {
+  display: grid;
+  /* place-items: left; */
+  margin-bottom: 5px;
   width: 100%;
 }
 
@@ -187,6 +198,25 @@ button:not(:disabled) {
   float:left;
   display:inline;
   width: 165px;
+}
+
+.button-tab  {
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+  color: steelblue;
+  background-color: #ffffff;
+  font-size: 10px;
+  font-weight: 500;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(192, 193, 199, .5);
+  border-radius: .5rem;
+  padding: 6px;
+  text-align: center;
+  box-sizing: border-box;
+  /* float:left; */
+  display:inline;
+  width: 90px;
 }
 
 .tab:hover {
@@ -240,7 +270,7 @@ button:not(:disabled) {
   height: 100%;
 }
 
-/* Dropdown Menu */
+/*** Dropdown Menu ***/
 #dropdown {
  background: none;
  font-size: .75rem;
@@ -276,7 +306,21 @@ select:focus {
   outline-offset: 2px;
 }
 
-/* Grid */
+/*** Rows and Columns ***/
+.row {
+  display: flex;
+}
+
+.column, .columns {
+  float: left;
+}
+
+.twelve.columns {
+  width: 100%;
+  margin-left: 0;
+}
+
+/*** Grid ***/
 .parent {
   width: 100%;
   display: grid;
@@ -288,39 +332,50 @@ select:focus {
 
 .state-grid {  
   grid-area: 1 / 1 / span 1 / span 4;
-  margin: 1em;
+  /* margin: 1em; */
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-top: 1em;
+  margin-bottom: .3em;
   grid-gap: .5em;
 }
 
 .district-grid {  
   grid-area: 1 / 5 / span 1 / span 2;
-  margin: 1em;
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-top: 1em;
+  margin-bottom: .3em;
+  grid-gap: .5em;
+}
+
+.button-grid {
+  grid-area: 2 / 1 / 2 / span 6;
+  /* margin: 1em; */
   grid-gap: .5em;
 }
 
 .title-grid {  
-  grid-area: 2 / 1 / span 1 / span 6;
+  grid-area: 3 / 1 / span 1 / span 6;
   margin: 1em;
   grid-gap: .5em;
 }
 
 .attendance-grid {  
-  grid-area: 2 / 1 / span 1 / span 3;
+  grid-area: 3 / 1 / span 1 / span 3;
   margin: 1em;
   grid-gap: .5em;
 }
 
 .absenteeism-grid {  
-  grid-area: 2 / 4 / span 1 / span 6;
+  grid-area: 3 / 4 / span 1 / span 6;
   margin: 1em;
   grid-gap: .5em;
 }
 
-/* Containers */
+/*** Containers ***/
 .header-box {
   height: 20px;
-  /* display: -webkit-box;
-  display: -ms-flexbox; */
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -372,7 +427,7 @@ select:focus {
   height: 600px;
 }
 
-/* Tables */
+/*** Tables ***/
 .state-table-1 {
   font-family: 'Inter', sans-serif;
   color: steelblue;
@@ -402,7 +457,7 @@ select:focus {
   content: "";
   position: absolute;
   width: .5px;
-  right: 1%;
+  right: 6%;
   height: 100%;
   background: steelblue;
   top: 20%;
@@ -460,7 +515,7 @@ select:focus {
   font-weight: 500;
 }
 
-/* Ag Grid */
+/*** Ag Grid ***/
 .ag-theme-quartz {
   --ag-font-family: 'Inter', sans-serif;
   --ag-font-size: 12px;
@@ -506,7 +561,7 @@ select:focus {
   text-align: left;
 }
 
-/* Affecting all headers */ 
+/* This affects all headers */ 
 .ag-theme-quartz .ag-header {
   font-family: 'Inter', sans-serif;
 }
@@ -521,8 +576,8 @@ select:focus {
   font-size: 10px;
 }
 
-/* adjusts font size for ag-grid header once it hits
-  a certain size */
+/* adjusts font size for ag-grid header
+  once it hits a certain size */
 @media (max-width: 940px) 
  {
   .ag-header-cell {

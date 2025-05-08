@@ -1,9 +1,8 @@
 // State and District Information Dashboard
 // table processing functions
 // author:   jbetley (https://github.com/jbetley)
-// version:  1.01
-// date:     04/20/25
-
+// version:  1.02
+// date:     05/02/25
 
 // div fade out/in; duration is ms; default is fade out,
 // set fadeOut to false to fade in
@@ -40,42 +39,6 @@ function fadeDiv(element, duration, fadeOut = true) {
 };
 
 
-// // creates blank table with label
-// function blankTable(id) {
-
-//    let tableDiv = document.getElementById(id);
-
-//    fadeDiv(tableDiv, 250);
-
-//    tableDiv.innerHTML = '';
-   
-//    var parentWidth = document.getElementById('attendanceTable').getBoundingClientRect().width;
-
-//    var table = document.createElement('TABLE');
-//    table.border = '0';
-//    table.width = parentWidth;
-
-//    var tableBody = document.createElement('TBODY');
-//    table.appendChild(tableBody);
-
-//    var tr = document.createElement('TR');
-//    tableBody.appendChild(tr);
-
-//    var td = document.createElement('TD');
-
-//    td.appendChild(document.createTextNode('No Data to Display.'));
-
-//    td.height = '50';
-//    td.classList.add("nodata-msg")
-//    tr.appendChild(td);
-   
-//    setTimeout(() => {
-//       tableDiv.appendChild(table);
-//       fadeDiv(tableDiv, 250, false);
-//       }, 300);
-// };
-
-
 function stateInfoTable(data, id) {
 
    let stateInfoTableDiv = document.getElementById(id);
@@ -98,9 +61,9 @@ function stateInfoTable(data, id) {
          for (var j = 0; j < 2; j++) {
             var td = document.createElement('TD');
             if (j == 0) {
-               td.width = '200';
+               td.width = '180';
             } else {
-               td.width = '50';
+               td.width = '70';
             }
             td.height = '12';
 
@@ -166,24 +129,14 @@ function stateInfoTable(data, id) {
          }
       }
 
-      // Set ids for the cells for which you want to add popups and
-      // attach the popup text as custom data
-      let cell1 = table.rows[6].cells[0];
-      let cell2 = table.rows[6].cells[1];
-      let cell3 = table.rows[3].cells[0];
-      let cell4 = table.rows[3].cells[1];
-
-      cell1.id = 'popup-written-notice-1';
-      cell1.myCustomData = { note: data['Notice Requirements'] };
-      cell2.id = 'popup-written-notice-2';
-      cell2.myCustomData = { note: data['Notice Requirements'] };
-      cell3.id = 'popup-charter-lea-notice-1';
-      cell3.myCustomData = { note: data['Charter Notes'] };
-      cell4.id = 'popup-charter-lea-notice-2';
-      cell4.myCustomData = { note: data['Charter Notes'] };
-
+      // Add Popups - Give rows that you want to have popups an
+      // id and attach text as dataset data to the row. Need to add new
+      // id to mouseover eventListener in index.html.
       table.rows[3].id = 'popup-charter-lea-notice'
+      table.rows[3].dataset.note = data['Charter Notes'];
+
       table.rows[6].id = 'popup-written-notice'
+      table.rows[6].dataset.note = data['Notice Requirements'];
 
    } else {
 

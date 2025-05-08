@@ -3,8 +3,8 @@
 # Database Queries (SQLite)                #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  1.01  # noqa: ERA001
-# date:     04/20/25
+# version:  1.02  # noqa: ERA001
+# date:     05/02/25
 
 import pandas as pd
 from sqlalchemy import create_engine, text
@@ -64,6 +64,10 @@ def get_state_dropdown():
 
     return run_query(q, params)
 
+# all = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
+#     "Low Grade"," High Grade", "Enrollment", "Number Charter Schools", "Number Public Schools",
+#     "Address", "City", "ZIP", "State", "Phone Number", "Type", "Subtype","Allocation Year",
+#     "Title I","Title II","Title III","Title IV","Title V"]
 
 def get_all_district_data(state_id):
 
@@ -79,7 +83,11 @@ def get_all_district_data(state_id):
 
     district_data = run_query(w, params)
     
-    district_data["Title I"] = district_data["Title I"].astype(float)
+    convert = ["Title I","Title II","Title III","Title IV","Title V"]
+
+    district_data[convert] = district_data[convert].apply(pd.to_numeric, errors='coerce')
+    
+    # district_data["Title I"] = district_data["Title I"].astype(float)
     district_data = district_data.sort_values(by="Title I", ascending=False)
     
     district_data = district_data.rename(columns={"District ID": "ID"})

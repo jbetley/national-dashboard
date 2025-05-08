@@ -11,6 +11,7 @@
 
    <!-- Third-Party Modules -->
    <script src="{{ url_for('static', filename='ag-grid-community.min.js')}}"></script>
+   <script src="{{ url_for('static', filename='xlsx.bundle.js')}}"></script>
 
    <!-- Local Modules -->
    <script src="{{ url_for('static', filename='table-helpers.js')}}"></script>
@@ -63,6 +64,14 @@
                      <div class="district-table" id="district-info-table"></div>
                   </div>
                </div>
+               <div class="button-grid">
+                  <div class="nav-button-container twelve columns">
+                     <div class="export-buttons">
+                        <div class="button-text">Download:</div><button id="csvButton" class="button-tab">CSV</button>
+                        <button id="excelButton" class="button-tab">Excel</button>
+                     </div>
+                  </div>
+               </div>
                <div class="title-grid">
                   <div class="header-box label" id="container-title-label"><div id="title-label" class="label__header"></div></div>     
                   <div class="table-box"  id="container-title-table"><div id="titleTable" style="width: 100%; height: 100%" class="ag-theme-quartz"></div></div>
@@ -83,8 +92,8 @@
 
 // National State and School District Info
 // author:   jbetley (https://github.com/jbetley)
-// version:  1.01
-// date:     04.20.25
+// version:  1.02
+// date:     05.02.25
 
 const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
@@ -170,7 +179,7 @@ async function getAttendanceData(select) {
 
 
 async function getSingleDistrictData(select) {
-   selectedRow = select;   // global
+   selectedRow = select;
    const data = await fetch(`${window.origin}/district`, {
       method: "POST",
          credentials: "include",
@@ -191,8 +200,163 @@ async function getSingleDistrictData(select) {
 };
 
 
+function reorderKeys(arr, order) {
+   return arr.map(obj => {
+      return order.reduce((acc, key) => {
+         // if (obj.hasOwnProperty(key)) {   // we want to keep blank values
+         acc[key] = obj[key];
+         // }
+         return acc;
+      }, {});
+   });
+};
+
+function findMaxKeyLength(arr, key) {
+  if (!arr || arr.length === 0) {
+    return 0;
+  }
+  return arr.reduce((max, obj) => {
+    const value = obj[key];
+    const length = value ? String(value).length : 0;
+    return Math.max(max, length);
+  }, 0);
+}
+
+// sheetsJS formatting function (col is the Excel
+// designation ("A","B", etc.))
+function formatColumn(worksheet, col, fmt) {
+  const range = XLSX.utils.decode_range(worksheet['!ref'])
+  let tableCol = XLSX.utils.decode_col(col); 
+
+  // note: range.s.r + 1 skips the header row
+  for (let row = range.s.r + 1; row <= range.e.r; ++row) {
+    const ref = XLSX.utils.encode_cell({ r: row, c: tableCol })
+    if (worksheet[ref] && worksheet[ref].t === 'n') {
+      worksheet[ref].z = fmt
+    }
+  }
+};
+
+
+async function downloadData(select, id) {
+
+// TODO: ADD ATTENDANCE DATA DOWNLOAD
+
+   const activeTab = document.querySelector(".tab.main.active").id;
+
+   if (activeTab == "titleTab") {
+      const data = await fetch(`${window.origin}/download`, {
+         method: "POST",
+            credentials: "include",
+            cache: "no-cache",
+            headers: {
+               Accept: "application/json",
+               "Content-Type": "application/json",
+         },
+         body:JSON.stringify(select)})
+         .then(response=>{
+            if (response.ok) {
+               return response.json()
+            } else {
+               alert("Network Error: Could not load data.")
+            }
+      });
+
+      // Need to reorder keys - for some reason, the stringify operation
+      // is reordering keys into alphabetical order
+      let keyOrder = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
+      "Low Grade"," High Grade", "Enrollment", "Number Charter Schools", "Number Public Schools",
+      "Address", "City", "State", "ZIP", "Phone Number", "Type", "Subtype","Allocation Year",
+      "Title I","Title II","Title III","Title IV","Title V"]
+
+      const reorderedData = reorderKeys(data, keyOrder);
+
+      if (id == "csvButton") {
+         const csv = convertArrayToCSV(reorderedData);
+         downloadCSV(csv, 'district_data.csv');
+      }
+      else if (id == "excelButton") {
+
+         // convert to excel spreadsheet
+         let worksheet = XLSX.utils.json_to_sheet(reorderedData);
+            
+         worksheet["!cols"] = [];
+
+         let minWidth = 15;
+
+         // Format Spreadsheet
+         const currency = '#,##0';
+
+         // Format Title columns
+         for (let col of ["T","U","V","W","X"]) {
+            formatColumn(worksheet, col, currency)
+         }
+         
+         // Fix column width
+         for (let i = 0; i < keyOrder.length; ++i) {
+            let headerWidth = keyOrder[i].length + 5;
+            let maxValueWidth = findMaxKeyLength(reorderedData, keyOrder[i]) + 5;
+
+            let colWidth = Math.max(minWidth, maxValueWidth, headerWidth);
+
+            if(!worksheet["!cols"][i]) worksheet["!cols"][i] = {wch: 3};
+            worksheet["!cols"][i].width = colWidth;
+         }
+
+         // Styling
+         // https://gitbrent.github.io/xlsx-js-style/
+         // format headers
+         var range = XLSX.utils.decode_range(worksheet['!ref']);
+
+         for (let colNum = range.s.c; colNum <= range.e.c; colNum++) {
+            const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colNum });
+            if (cellAddress) {
+               worksheet[cellAddress].s = {
+                  font: {
+                     name: "Calibri",
+                     sz: 11,
+                     bold: true,
+                     color: { rgb: "000000" },
+                     },
+                  alignment: {
+                     vertical: "center",
+                     horizontal: "center"
+                  }
+               }
+            }
+            for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+               if (rowNum != 0) {
+                  // Center all rows- Skipping Name and Address columns
+                  if (![2,3,11,12,13].includes(colNum)) {
+                     const cellAddress = XLSX.utils.encode_cell({ r: rowNum, c: colNum });
+                     if (cellAddress) {
+                        worksheet[cellAddress].s = {
+                           alignment: {
+                              vertical: "center",
+                              horizontal: "center"
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         };
+         const workbook = XLSX.utils.book_new();
+         XLSX.utils.book_append_sheet(workbook, worksheet, "Districts");
+         XLSX.writeFile(workbook, "districts.xlsx", { compression: true });
+      }
+      else {
+         alert("wrong trigger")
+      }
+   } else {
+      console.log("attendancetab")
+   }
+};
+
+
 async function setStateList() {
-   const uniqueStates = [...new Map(allStatesObj.map(
+
+   let uniqueStates = [...new Map(allStatesObj.map(
       item => [item["State Abbreviation"], item]
    )).values()];
 
@@ -200,9 +364,11 @@ async function setStateList() {
       el => ({[el["State Abbreviation"]]: el["State Full"]})
    );
 
-   removeOptions(stateSelection);
+   stateDropdown.sort(function(a, b) { 
+      return Object.values(a)[0].localeCompare(Object.values(b)[0])
+   }) // swap a & b for reverse sort
 
-   sortArrayOfObjsByKey(stateDropdown);
+   removeOptions(stateSelection);
 
    stateDropdown.forEach(obj => {
       Object.entries(obj).forEach(([key, value]) => {
@@ -340,42 +506,56 @@ function createTitleTable(tableData, tableID) {
 };
 
 
+document.querySelectorAll('.button-tab')
+   .forEach(btn => btn.addEventListener('click', function() {
+      downloadData(stateSelection.value, this.id);
+      })
+   );
+
 /* Popups */
 // We attach the event listener to the table because the table element
 // because it is immediately present in the DOM, the children elements (
-// tbody, tr, td) do not exist until DisplayStateInfo is triggered.
-
-// TODO: Working on TR now, but still flickering on space between TDs
+// tbody, tr, td) do not exist until DisplayStateInfo is triggered. the
+// content of 'note' changes based on which ID is moused over
 const popup = document.querySelector(".popup");
 
 let stateInfoTable1 = document.getElementById("state-info-table-1");
 
 stateInfoTable1.addEventListener("mouseover", function(event) {
    
+   // most important line. Mouseover events trigger on TDs but
+   // not TRs, and because we attach the note data to the row, we
+   // need to find the TR for the event TD
    const row = event.target.closest('tr');
 
    if (row != null) {
       if (row.hasAttribute('id')) {
 
-   //  if (event.target.id.startsWith('popup-written-notice') |
-   //  event.target.id.startsWith('popup-charter-lea-notice')) {
+         if (row.id.startsWith('popup-written-notice') |
+            row.id.startsWith('popup-charter-lea-notice')) {
 
-      if (row.id.startsWith('popup-written-notice') |
-      row.id.startsWith('popup-charter-lea-notice')) {
-
-         console.log(row)
-         popup.style.display = "block";
-         popup.innerHTML = event.target.myCustomData['note']
-         const triggerRect = stateInfoTable1.getBoundingClientRect();
-         popup.style.top = triggerRect.top - triggerRect.height + "px";
-         popup.style.left = triggerRect.left + "px";
-      }
-      else {
-         popup.style.display = "none";
+            popup.style.display = "block";
+            popup.innerHTML = row.dataset.note;      
+         }
+         else {
+            popup.style.display = "none";
+         }
       }
    }
-}
+   else {
+      popup.style.display = "none";
+   }
 });
+
+stateInfoTable1.addEventListener('mousemove', (event) => {
+   const mouseX = event.clientX;
+   const mouseY = event.clientY;
+   const offsetX = 20;
+   const offsetY = -250;
+
+   popup.style.left = mouseX + offsetX + 'px';
+   popup.style.top = mouseY + offsetY + 'px';
+  });
 
 stateInfoTable1.addEventListener("mouseleave", function(event) {
    popup.style.display = "none";

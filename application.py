@@ -3,8 +3,8 @@
 # main application & backend               #
 ############################################
 # author:   jbetley (https://github.com/jbetley)
-# version:  1.01  # noqa: ERA001
-# date:     04/20/25
+# version:  1.02  # noqa: ERA001
+# date:     05/02/25
 
 import os
 
@@ -127,6 +127,20 @@ def load_state_data():
     # NOTE: For some reason the district_data conversion causes this
     # dataset to drop some records (with same First name)
     return state_data.to_dict('records')
+
+
+@application.route("/download", methods=["post"])
+def download():
+    
+    data = request.get_json()
+    
+    state_data = get_state_data(data)
+    district_data = get_all_district_data(data)
+
+    return [
+        {k: v for k, v in m.items() if v == v and v is not None}
+        for m in district_data.to_dict(orient="records")
+    ]
 
 
 if __name__ == "__main__":

@@ -1,7 +1,27 @@
 // general utility functions
 // author:   jbetley (https://github.com/jbetley)
-// version:  1.01
-// date:     04.20.25 
+// version:  1.02
+// date:     05.02.25 
+
+
+// convert array of objects to csv
+function convertArrayToCSV(data) {
+  const header = Object.keys(data[0]).join(',');
+  const rows = data.map(obj => Object.values(obj).join(','));
+  return `${header}\n${rows.join('\n')}`;
+}
+
+
+// export data to csv 
+function downloadCSV(csv, filename) {
+  const csvFile = new Blob([csv], { type: 'text/csv' });
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(csvFile);
+  downloadLink.download = filename;
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
 
 
 // sorts objects by number, moves blanks to end
@@ -197,13 +217,6 @@ function longYear(year) {
 // Sort object as an array based on values
 function sortObj(obj) {
   return Object.keys(obj).map(k => ([k, obj[k]])).sort((a, b) => (b[1] - a[1]))
-};
-
-
-function sortArrayOfObjsByKey(obj) {
-  return obj.sort(function(a,b){
-    return (Object.keys(a)[0].toLowerCase() > Object.keys(b)[0].toLowerCase()) - 0.5;
-   });
 };
 
 
