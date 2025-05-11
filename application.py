@@ -90,7 +90,10 @@ def load_attendance_data():
     attendance_data = attendance_data.dropna(
         subset=["Attendance Rate", "Chronic Absenteeism"], how='all'
     )
-    
+
+    # need this to retain columns with empty values
+    attendance_data = attendance_data.fillna("")
+        
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
         for m in attendance_data.to_dict(orient="records")
@@ -131,15 +134,24 @@ def load_state_data():
 
 @application.route("/download", methods=["post"])
 def download():
-    
+    # data is in form [SchoolID, PageType]
     data = request.get_json()
-    
-    state_data = get_state_data(data)
-    district_data = get_all_district_data(data)
 
+    school_id = data[0]
+    page_type = data[1]
+    
+    # state_data = get_state_data(school_id)
+    
+    if page_type == "title":
+        return_data = get_all_district_data(school_id)
+    elif page_type == "attend":
+        return_data = get_attendance_data(school_id)
+    else:
+        print("ERRROR") # TODO: Do better than this
+        
     return [
         {k: v for k, v in m.items() if v == v and v is not None}
-        for m in district_data.to_dict(orient="records")
+        for m in return_data.to_dict(orient="records")
     ]
 
 

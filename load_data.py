@@ -64,10 +64,6 @@ def get_state_dropdown():
 
     return run_query(q, params)
 
-# all = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
-#     "Low Grade"," High Grade", "Enrollment", "Number Charter Schools", "Number Public Schools",
-#     "Address", "City", "ZIP", "State", "Phone Number", "Type", "Subtype","Allocation Year",
-#     "Title I","Title II","Title III","Title IV","Title V"]
 
 def get_all_district_data(state_id):
 

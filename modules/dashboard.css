@@ -1,8 +1,8 @@
 /* State and District Information Dashboard
   stylesheet
   author:   jbetley (https://github.com/jbetley)
-  version:  1.01
-  date:     04/20/25
+  version:  1.02
+  date:     05/14/25
 */
 
 /*** Page ***/
@@ -23,7 +23,7 @@ body {
 }
 
 svg {
-  overflow: visible;  /* TODO */
+  overflow: visible;
 }
 
 /*** Headers and Labels ***/
@@ -71,18 +71,28 @@ margin-top: 10px;
 /*** Notes, Messages, and Popups ***/
 .note {
   padding: 2px;
-  border: 1px solid steelblue;
   max-width: fit-content;
   margin-left: auto;
   margin-right: auto;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
 }
 
 .note-container {
   display: inline-block;
-  width: 50%;
-  font-weight: 400;
-  padding-top: 5px;
+  margin-bottom: 5px;
+  border: 1px solid steelblue;
   text-align: center;
+  border-radius: 5px;
+}
+
+.note-container.hover {
+  margin-left: 30px;
+}
+
+.note-container.drop {
+  margin-left: 15px;
 }
 
 .nodata-msg {
@@ -144,7 +154,10 @@ button:not(:disabled) {
   line-height: .8;
   margin-right: 5px;
   font-size: 12px;
-  /* vertical-align: bottom; */
+}
+
+.export-buttons {
+  margin-top: 5px;
 }
 
 /*** Navigation ***/
@@ -158,7 +171,6 @@ button:not(:disabled) {
 
 .nav-button-container {
   display: grid;
-  /* place-items: left; */
   margin-bottom: 5px;
   width: 100%;
 }
@@ -214,7 +226,6 @@ button:not(:disabled) {
   padding: 6px;
   text-align: center;
   box-sizing: border-box;
-  /* float:left; */
   display:inline;
   width: 90px;
 }
@@ -332,11 +343,9 @@ select:focus {
 
 .state-grid {  
   grid-area: 1 / 1 / span 1 / span 4;
-  /* margin: 1em; */
   margin-right: 1em;
   margin-left: 1em;
   margin-top: 1em;
-  margin-bottom: .3em;
   grid-gap: .5em;
 }
 
@@ -345,13 +354,11 @@ select:focus {
   margin-right: 1em;
   margin-left: 1em;
   margin-top: 1em;
-  margin-bottom: .3em;
   grid-gap: .5em;
 }
 
 .button-grid {
   grid-area: 2 / 1 / 2 / span 6;
-  /* margin: 1em; */
   grid-gap: .5em;
 }
 
@@ -535,7 +542,7 @@ select:focus {
   font-size: 10px;
   font-weight: 600;
   line-height: 15px !important;
-  word-break: normal; /* prevent words from breaking */
+  word-break: normal; /* prevents words from breaking */
 }
 
 .ag-theme-quartz .ag-row-odd {
@@ -576,8 +583,7 @@ select:focus {
   font-size: 10px;
 }
 
-/* adjusts font size for ag-grid header
-  once it hits a certain size */
+/* adjusts font size for ag-grid header once it hits a certain size */
 @media (max-width: 940px) 
  {
   .ag-header-cell {

@@ -29,7 +29,7 @@
       <br>
       <label>Select District:</label>
       <select name="district" id="districtSelect"></select>
-      <div class="note-container"><div class="note">Use District dropdown or click on table row to change district information.</div></div>
+      <div class="note-container drop"><div class="note">Use District dropdown or click on table row to change district information.</div></div>
    </form>
    <div id ="tabnavigation">
       <div class="row">
@@ -65,6 +65,7 @@
                   </div>
                </div>
                <div class="button-grid">
+                  <div class="note-container hover"><div class="note">Hover over bolded text for more information.</div></div>
                   <div class="nav-button-container twelve columns">
                      <div class="export-buttons">
                         <div class="button-text">Download:</div><button id="csvButton" class="button-tab">CSV</button>
@@ -199,157 +200,127 @@ async function getSingleDistrictData(select) {
    displayDistrictInfoTable(data);
 };
 
-
-function reorderKeys(arr, order) {
-   return arr.map(obj => {
-      return order.reduce((acc, key) => {
-         // if (obj.hasOwnProperty(key)) {   // we want to keep blank values
-         acc[key] = obj[key];
-         // }
-         return acc;
-      }, {});
-   });
-};
-
-function findMaxKeyLength(arr, key) {
-  if (!arr || arr.length === 0) {
-    return 0;
-  }
-  return arr.reduce((max, obj) => {
-    const value = obj[key];
-    const length = value ? String(value).length : 0;
-    return Math.max(max, length);
-  }, 0);
-}
-
-// sheetsJS formatting function (col is the Excel
-// designation ("A","B", etc.))
-function formatColumn(worksheet, col, fmt) {
-  const range = XLSX.utils.decode_range(worksheet['!ref'])
-  let tableCol = XLSX.utils.decode_col(col); 
-
-  // note: range.s.r + 1 skips the header row
-  for (let row = range.s.r + 1; row <= range.e.r; ++row) {
-    const ref = XLSX.utils.encode_cell({ r: row, c: tableCol })
-    if (worksheet[ref] && worksheet[ref].t === 'n') {
-      worksheet[ref].z = fmt
-    }
-  }
-};
-
-
+// Download District data (attendance or Title Funding) depending
+// on the selected tab as csv or (slightly) formatted excel file
 async function downloadData(select, id) {
-
-// TODO: ADD ATTENDANCE DATA DOWNLOAD
 
    const activeTab = document.querySelector(".tab.main.active").id;
 
-   if (activeTab == "titleTab") {
-      const data = await fetch(`${window.origin}/download`, {
-         method: "POST",
-            credentials: "include",
-            cache: "no-cache",
-            headers: {
-               Accept: "application/json",
-               "Content-Type": "application/json",
-         },
-         body:JSON.stringify(select)})
-         .then(response=>{
-            if (response.ok) {
-               return response.json()
-            } else {
-               alert("Network Error: Could not load data.")
-            }
-      });
+   let keyOrder,
+      passed,
+      colsToFormat,
+      colFormat,
+      fileName;
 
-      // Need to reorder keys - for some reason, the stringify operation
-      // is reordering keys into alphabetical order
-      let keyOrder = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
+   if (activeTab == "titleTab") {
+      passed = [select,"title"]
+      keyOrder = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
       "Low Grade"," High Grade", "Enrollment", "Number Charter Schools", "Number Public Schools",
       "Address", "City", "State", "ZIP", "Phone Number", "Type", "Subtype","Allocation Year",
       "Title I","Title II","Title III","Title IV","Title V"]
+      colsToFormat = ["T","U","V","W","X"]
+      colFormat = "#,##0";
+      fileName = "districts_title_funding"
+   }
+   else if (activeTab == "attendTab") {
+      passed = [select,"attend"]
+      keyOrder = ["Year", "District Name","ID", "Attendance Rate", "Chronic Absenteeism"]
+      colsToFormat = ["D","E"]
+      colFormat = "0.00%";
+      fileName = "districts_attendance"
+   }
+   else {
+      alert("Incorrect Entry.")
+   }
 
-      const reorderedData = reorderKeys(data, keyOrder);
-
-      if (id == "csvButton") {
-         const csv = convertArrayToCSV(reorderedData);
-         downloadCSV(csv, 'district_data.csv');
-      }
-      else if (id == "excelButton") {
-
-         // convert to excel spreadsheet
-         let worksheet = XLSX.utils.json_to_sheet(reorderedData);
-            
-         worksheet["!cols"] = [];
-
-         let minWidth = 15;
-
-         // Format Spreadsheet
-         const currency = '#,##0';
-
-         // Format Title columns
-         for (let col of ["T","U","V","W","X"]) {
-            formatColumn(worksheet, col, currency)
+   const data = await fetch(`${window.origin}/download`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(passed)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
          }
+   });
+
+   const reorderedData = reorderKeys(data, keyOrder);
+
+   if (id == "csvButton") {
+      const csv = convertArrayToCSV(reorderedData);
+      downloadCSV(csv, 'district_data.csv');
+   }
+   else if (id == "excelButton") {
+
+      // convert to excel spreadsheet
+      let worksheet = XLSX.utils.json_to_sheet(reorderedData);
          
-         // Fix column width
-         for (let i = 0; i < keyOrder.length; ++i) {
-            let headerWidth = keyOrder[i].length + 5;
-            let maxValueWidth = findMaxKeyLength(reorderedData, keyOrder[i]) + 5;
+      worksheet["!cols"] = [];
 
-            let colWidth = Math.max(minWidth, maxValueWidth, headerWidth);
+      let minWidth = 15;
 
-            if(!worksheet["!cols"][i]) worksheet["!cols"][i] = {wch: 3};
-            worksheet["!cols"][i].width = colWidth;
-         }
+      // Format Title columns
+      for (let col of colsToFormat) {
+         formatColumn(worksheet, col, colFormat)
+      }         
+      
+      // Fix column width
+      for (let i = 0; i < keyOrder.length; ++i) {
+         let headerWidth = keyOrder[i].length + 5;
+         let maxValueWidth = findMaxValueLength(reorderedData, keyOrder[i]) + 5;
 
-         // Styling
-         // https://gitbrent.github.io/xlsx-js-style/
-         // format headers
-         var range = XLSX.utils.decode_range(worksheet['!ref']);
+         let colWidth = Math.max(minWidth, maxValueWidth, headerWidth);
 
-         for (let colNum = range.s.c; colNum <= range.e.c; colNum++) {
-            const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colNum });
-            if (cellAddress) {
-               worksheet[cellAddress].s = {
-                  font: {
-                     name: "Calibri",
-                     sz: 11,
-                     bold: true,
-                     color: { rgb: "000000" },
-                     },
-                  alignment: {
-                     vertical: "center",
-                     horizontal: "center"
-                  }
+         if(!worksheet["!cols"][i]) worksheet["!cols"][i] = {wch: 3};
+         worksheet["!cols"][i].width = colWidth;
+      }
+
+      // Styling (https://gitbrent.github.io/xlsx-js-style/)
+      // format headers
+      var range = XLSX.utils.decode_range(worksheet['!ref']);
+
+      for (let colNum = range.s.c; colNum <= range.e.c; colNum++) {
+         const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colNum });
+         if (cellAddress) {
+            worksheet[cellAddress].s = {
+               font: {
+                  name: "Calibri",
+                  sz: 11,
+                  bold: true,
+                  color: { rgb: "000000" },
+                  },
+               alignment: {
+                  vertical: "center",
+                  horizontal: "center"
                }
             }
-            for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
-               if (rowNum != 0) {
-                  // Center all rows- Skipping Name and Address columns
-                  if (![2,3,11,12,13].includes(colNum)) {
-                     const cellAddress = XLSX.utils.encode_cell({ r: rowNum, c: colNum });
-                     if (cellAddress) {
-                        worksheet[cellAddress].s = {
-                           alignment: {
-                              vertical: "center",
-                              horizontal: "center"
-                           }
+         }
+         for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+            if (rowNum != 0) {
+               // Center all rows- Skipping Name and Address columns
+               if (![2,3,11,12,13].includes(colNum)) {
+                  const cellAddress = XLSX.utils.encode_cell({ r: rowNum, c: colNum });
+                  if (cellAddress) {
+                     worksheet[cellAddress].s = {
+                        alignment: {
+                           vertical: "center",
+                           horizontal: "center"
                         }
                      }
                   }
                }
             }
-         };
-         const workbook = XLSX.utils.book_new();
-         XLSX.utils.book_append_sheet(workbook, worksheet, "Districts");
-         XLSX.writeFile(workbook, "districts.xlsx", { compression: true });
-      }
-      else {
-         alert("wrong trigger")
-      }
-   } else {
-      console.log("attendancetab")
+         }
+      };
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Districts");
+      XLSX.writeFile(workbook, "districts.xlsx", { compression: true });
    }
 };
 
