@@ -1,10 +1,47 @@
-// State and District Information Dashboard
 // table processing functions
 // author:   jbetley (https://github.com/jbetley)
 // version:  1.02
 // date:     05/02/25
 
-// div fade out/in; duration is ms; default is fade out,
+
+// Table Formatting Functions //
+function moneyFormatter(params) {
+   if (params.value == undefined) {
+      return '\u2014'
+   }
+   else {
+      const val = parseFloat(params.value)
+      var sansDec = val.toFixed(2);
+      var formatted = sansDec.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return '$ '+ `${formatted}`;
+   }
+};
+
+
+function percentFormatter(params) {
+   if (params.value == undefined) {
+      return '\u2014'
+   }
+   else {
+      const val = params.value * 100;
+      var formatted = val.toFixed(2);
+      return `${formatted}` + '%';
+   }
+};
+
+
+// substitues em dash for undefined values
+function blankFormatter(params) {
+   if (params.value == undefined) {
+      return '\u2014'
+   }
+   else {
+      return params.value;
+   }
+};
+
+
+// Fade a div out or in. duration is ms; default is fade out,
 // set fadeOut to false to fade in
 function fadeDiv(element, duration, fadeOut = true) {
    let startTime;
@@ -39,11 +76,11 @@ function fadeDiv(element, duration, fadeOut = true) {
 };
 
 
+// Basic html table (State School Info)
 function stateInfoTable(data, id) {
 
    let stateInfoTableDiv = document.getElementById(id);
-   
-   // clear existing data
+
    stateInfoTableDiv.innerHTML = '';
 
    var table = document.createElement('TABLE');
@@ -129,9 +166,11 @@ function stateInfoTable(data, id) {
          }
       }
 
-      // Add Popups - Give rows that you want to have popups an
-      // id and attach text as dataset data to the row. Need to add new
-      // id to mouseover eventListener in index.html.
+      // Tooltip/Popups //
+      // Rows with tooltips/popups must be given a specific ID and the 
+      // data to be displayed must be set as a string dataset note
+      // value. Also need to add the id to the mouseover eventListener
+      // in index.html.
       table.rows[3].id = 'popup-charter-lea-notice'
       table.rows[3].dataset.note = data['Charter Notes'];
 
@@ -142,8 +181,7 @@ function stateInfoTable(data, id) {
 
       // Empty Table
       // NOTE: approximating width of the tables by calculating the
-      // width of the label and using 1/3 of the value here and 2/3 of
-      // the value in the allocations table.
+      // width of the label and using 1/3 of that value
       const labelDiv = document.getElementById("state-label");
       const labelDivWidth = window.getComputedStyle(labelDiv).width;
 
@@ -162,11 +200,11 @@ function stateInfoTable(data, id) {
 };
 
 
+// programatically create specific basic html table (Title Allocations)
 function allocationsTable(object, id) {
 
    var allocationsTableDiv = document.getElementById(id);
 
-   // clear existing data
    allocationsTableDiv.innerHTML = '';
 
    var table = document.createElement('TABLE');
@@ -230,6 +268,8 @@ function allocationsTable(object, id) {
    } else {
 
       // Empty Table
+      // NOTE: approximating width of the tables by calculating the
+      // width of the label and using 2/3 of that value.
       const labelDiv = document.getElementById("state-label");
       const labelDivWidth = window.getComputedStyle(labelDiv).width;
       let tr = document.createElement('TR');
@@ -248,6 +288,7 @@ function allocationsTable(object, id) {
 };
 
 
+// programatically create specific basic html table (School District Info)
 function districtInfoTable(data, id) {
 
    let districtInfoTableDiv = document.getElementById(id);
@@ -312,7 +353,7 @@ function districtInfoTable(data, id) {
          }
          else if (row == 4) {
             let type;
-// TODO: FIX SCHOOL TYPE TO BE MORE GRANULAR
+
             if (data['Type'].includes('Charter')) {
                type = 'Charter School'
             } else {
@@ -357,40 +398,4 @@ function districtInfoTable(data, id) {
       districtInfoTableDiv.appendChild(table);
       fadeDiv(districtInfoTableDiv, 250, false);
       }, 300);
-};
-
-
-// Table Formatting Functions //
-function moneyFormatter(params) {
-   if (params.value == undefined) {
-      return '\u2014'
-   }
-   else {
-      const val = parseFloat(params.value)
-      var sansDec = val.toFixed(2);
-      var formatted = sansDec.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      return '$ '+ `${formatted}`;
-   }
-};
-
-
-function percentFormatter(params) {
-   if (params.value == undefined) {
-      return '\u2014'
-   }
-   else {
-      const val = params.value * 100;
-      var formatted = val.toFixed(2);
-      return `${formatted}` + '%';
-   }
-};
-
-
-function blankFormatter(params) {
-   if (params.value == undefined) {
-      return '\u2014'
-   }
-   else {
-      return params.value;
-   }
 };

@@ -1,9 +1,16 @@
+<!--
+   State and District School Dashboard
+   author:   jbetley (https://github.com/jbetley)
+   version:  1.02
+   date:     05.02.25
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-   <title>SchoolStatus District Information Dashboard</title>
+   <title>State and District School Dashboard</title>
 
    <!-- Imported Fonts -->
    <link  rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -22,7 +29,7 @@
    <link rel="stylesheet" media="all" href="{{ url_for('static', filename='dashboard.css')}}">
 </head>
 <body>
-   <h3>State and School District Information</h3>
+   <h3>State and District School Information</h3>
    <form name="dashboardselect" id="dropdown">
       <label>Select State:</label>
       <select name="state" id="stateSelect"></select>
@@ -91,11 +98,6 @@
 </body>
 <script type="module">
 
-// National State and School District Info
-// author:   jbetley (https://github.com/jbetley)
-// version:  1.02
-// date:     05.02.25
-
 const allStatesUrl = `${window.origin}/load`;
 const allStatesResponse = await fetch(allStatesUrl);
 var allStatesObj = await allStatesResponse.json();
@@ -158,27 +160,6 @@ async function getAllDistrictData(select) {
 };
 
 
-async function getAttendanceData(select) {
-   const data = await fetch(`${window.origin}/attendance`, {
-      method: "POST",
-         credentials: "include",
-         cache: "no-cache",
-         headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-      },
-      body:JSON.stringify(select)})
-      .then(response=>{
-         if (response.ok) {
-            return response.json()
-         } else {
-            alert("Network Error: Could not load data.")
-         }
-      });
-   displayAttendanceTables(data);
-};
-
-
 async function getSingleDistrictData(select) {
    selectedRow = select;
    const data = await fetch(`${window.origin}/district`, {
@@ -200,8 +181,31 @@ async function getSingleDistrictData(select) {
    displayDistrictInfoTable(data);
 };
 
-// Download District data (attendance or Title Funding) depending
-// on the selected tab as csv or (slightly) formatted excel file
+
+async function getAttendanceData(select) {
+   const data = await fetch(`${window.origin}/attendance`, {
+      method: "POST",
+         credentials: "include",
+         cache: "no-cache",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+      },
+      body:JSON.stringify(select)})
+      .then(response=>{
+         if (response.ok) {
+            return response.json()
+         } else {
+            alert("Network Error: Could not load data.")
+         }
+      });
+   displayAttendanceTables(data);
+};
+
+
+// Download District level (attendance/chronic absenteeism or
+// Title Funding) data depending on the selected tab as csv or
+// (lightly) formatted excel file
 async function downloadData(select, id) {
 
    const activeTab = document.querySelector(".tab.main.active").id;
@@ -213,24 +217,29 @@ async function downloadData(select, id) {
       fileName;
 
    if (activeTab == "titleTab") {
-      passed = [select,"title"]
+
+      passed = [select,"title"];
       keyOrder = ["State Abbreviation","State Full", "District Name","Alt Name", "NCES ID", "ID",
       "Low Grade"," High Grade", "Enrollment", "Number Charter Schools", "Number Public Schools",
       "Address", "City", "State", "ZIP", "Phone Number", "Type", "Subtype","Allocation Year",
-      "Title I","Title II","Title III","Title IV","Title V"]
-      colsToFormat = ["T","U","V","W","X"]
+      "Title I","Title II","Title III","Title IV","Title V"];
+      colsToFormat = ["T","U","V","W","X"];
       colFormat = "#,##0";
-      fileName = "districts_title_funding"
+      fileName = "districts_title_funding";
+
    }
    else if (activeTab == "attendTab") {
-      passed = [select,"attend"]
-      keyOrder = ["Year", "District Name","ID", "Attendance Rate", "Chronic Absenteeism"]
-      colsToFormat = ["D","E"]
+
+      passed = [select,"attend"];
+      keyOrder = ["Year", "District Name","ID", "Attendance Rate", "Chronic Absenteeism"];
+      colsToFormat = ["D","E"];
       colFormat = "0.00%";
-      fileName = "districts_attendance"
+      fileName = "districts_attendance";
+
    }
    else {
-      alert("Incorrect Entry.")
+      console.error("No tab selected.")
+      return
    }
 
    const data = await fetch(`${window.origin}/download`, {
@@ -258,19 +267,21 @@ async function downloadData(select, id) {
    }
    else if (id == "excelButton") {
 
-      // convert to excel spreadsheet
+      // converts json to excel worksheet object
       let worksheet = XLSX.utils.json_to_sheet(reorderedData);
-         
+      
+      // sheetJS attribute for column formatting
       worksheet["!cols"] = [];
 
       let minWidth = 15;
 
-      // Format Title columns
+      // format numerical column values
       for (let col of colsToFormat) {
          formatColumn(worksheet, col, colFormat)
-      }         
+      };
       
-      // Fix column width
+      // Adjust with of column to greater of: max header length,
+      // max property length, or minimum width
       for (let i = 0; i < keyOrder.length; ++i) {
          let headerWidth = keyOrder[i].length + 5;
          let maxValueWidth = findMaxValueLength(reorderedData, keyOrder[i]) + 5;
@@ -279,12 +290,12 @@ async function downloadData(select, id) {
 
          if(!worksheet["!cols"][i]) worksheet["!cols"][i] = {wch: 3};
          worksheet["!cols"][i].width = colWidth;
-      }
+      };
 
       // Styling (https://gitbrent.github.io/xlsx-js-style/)
-      // format headers
       var range = XLSX.utils.decode_range(worksheet['!ref']);
 
+      // format headers - font, bold, etc.
       for (let colNum = range.s.c; colNum <= range.e.c; colNum++) {
          const cellAddress = XLSX.utils.encode_cell({ r: 0, c: colNum });
          if (cellAddress) {
@@ -300,10 +311,12 @@ async function downloadData(select, id) {
                   horizontal: "center"
                }
             }
-         }
+         };
+
+         // Center rows- Skipping Name and Address columns
          for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
             if (rowNum != 0) {
-               // Center all rows- Skipping Name and Address columns
+
                if (![2,3,11,12,13].includes(colNum)) {
                   const cellAddress = XLSX.utils.encode_cell({ r: rowNum, c: colNum });
                   if (cellAddress) {
@@ -316,15 +329,19 @@ async function downloadData(select, id) {
                   }
                }
             }
-         }
+         };
       };
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Districts");
       XLSX.writeFile(workbook, "districts.xlsx", { compression: true });
    }
+   else {
+      console.error("No button selected.")
+      return
+   }
 };
 
-
+// populate state dropdown
 async function setStateList() {
 
    let uniqueStates = [...new Map(allStatesObj.map(
@@ -337,7 +354,7 @@ async function setStateList() {
 
    stateDropdown.sort(function(a, b) { 
       return Object.values(a)[0].localeCompare(Object.values(b)[0])
-   }) // swap a & b for reverse sort
+   }); // swap a & b for reverse sort
 
    removeOptions(stateSelection);
 
@@ -349,14 +366,14 @@ async function setStateList() {
 };
 
 
+// populate district dropdown
 async function setDistrictList() {
    let stateDistricts = allStatesObj.filter(
       val => val["State Abbreviation"].includes(stateSelection.value)
    );
 
-   // NOTE: we want list sorted alphabetically, except for default, which we
-   // want to be the school with the highest Title I Allocation (the
-   // DistrictTitleTable order is sorted by Title I Allocation)
+   // NOTE: we want list sorted alphabetically, except for the default displayed
+   // district, which we want to be the school with the highest Title I Allocation
    let sortedDistricts = sortObjectsByNumberWithBlanksToEnd(stateDistricts, "Title I");
 
    const highest = sortedDistricts.shift();
@@ -385,8 +402,10 @@ async function setDistrictList() {
    );
 };
 
+// TODO: DOes it? Move get single district data to table helpers?
+// TODO: Move all getter functions to separate file?
 
-// NOTE: This needs to be in index.html so
+// NOTE: This function must be located in in index.html so
 // getSingleDistrictData() is in scope
 function createTitleTable(tableData, tableID) {
 
@@ -456,6 +475,8 @@ function createTitleTable(tableData, tableID) {
       }
    });
 
+   // Resets distict info table when the respective district
+   // funding row table is clicked
    let options = {
       columnDefs: columns,
       onRowClicked: function (e) {
@@ -476,26 +497,27 @@ function createTitleTable(tableData, tableID) {
    return options
 };
 
-
+// Download buttons
 document.querySelectorAll('.button-tab')
    .forEach(btn => btn.addEventListener('click', function() {
       downloadData(stateSelection.value, this.id);
       })
    );
 
+
 /* Popups */
-// We attach the event listener to the table because the table element
-// because it is immediately present in the DOM, the children elements (
-// tbody, tr, td) do not exist until DisplayStateInfo is triggered. the
-// content of 'note' changes based on which ID is moused over
+// Attach the event listener to the table because the table element
+// is immediately present in the DOM, unlike the the children elements (
+// tbody, tr, td) which do not exist until DisplayStateInfo is triggered.
+// The content of 'note' changes based on which ID is moused over
 const popup = document.querySelector(".popup");
 
 let stateInfoTable1 = document.getElementById("state-info-table-1");
 
 stateInfoTable1.addEventListener("mouseover", function(event) {
    
-   // most important line. Mouseover events trigger on TDs but
-   // not TRs, and because we attach the note data to the row, we
+   // Critical. Mouseover events trigger on TDs but not TRs,
+   // and because we attach the note data to the TR, we
    // need to find the TR for the event TD
    const row = event.target.closest('tr');
 
@@ -532,9 +554,8 @@ stateInfoTable1.addEventListener("mouseleave", function(event) {
    popup.style.display = "none";
 });
 
-
+/* Nav */
 var stateSelection = document.getElementById("stateSelect");
-
 stateSelection.addEventListener("change", async () => {
 
    await getStateData(stateSelection.value);
@@ -551,28 +572,27 @@ stateSelection.addEventListener("change", async () => {
 
 
 var districtSelection = document.getElementById("districtSelect");
-
 districtSelection.addEventListener("change", async () => {
    getSingleDistrictData(districtSelection.value);
 });
 
 
-// switches active status for tabs
+// Switches active status for tabs
 const navTabs = document.querySelector("div#nav-tabs"),
 nav_tab_elms = document.querySelectorAll("button[data-tab], div[data-tab]");
 navTabs.onclick = ({target}) => {
    // ignore other clicks in this area (like spaces between buttons)
    if (!target.matches("button[data-tab]")) return;
 
-   // cycling through "dataset", tab-n-1", "tab-n-2", etc. and setting
-   // class to active where the target.dataset equals the class
+   // cycling through "dataset" and setting class to active
+   // where the target.dataset equals the class
    nav_tab_elms.forEach(elTab => {
       elTab.classList
       .toggle("active", (elTab.dataset.tab===target.dataset.tab))
    })
 };
 
-// Navigation Tabs //
+
 if (tabnavigation.addEventListener) {
    tabnavigation.addEventListener('click',navigateHandler,false);
 }
@@ -609,7 +629,7 @@ async function navigateHandler(e) {
    }
 };
 
-
+/* Display functions */
 async function displayStateInfoTables(data) {
 
    const stateName = stateSelection.options[stateSelection.selectedIndex].text;
@@ -636,7 +656,7 @@ async function displayStateInfoTables(data) {
    let table1Label = document.getElementById("table-1-title");
    table1Label.textContent = "State Overview";
 
-   //fade out both tables at once using the container
+   // fade out both tables at once using the container
    let stateInfoTableDiv = document.getElementById("container-state-info");
    
    fadeDiv(stateInfoTableDiv, 250);
@@ -662,7 +682,6 @@ districtInfoTable(data[0], "district-info-table");
 };
 
 
-// All selected state district title allocations
 async function displayDistrictTitleTable(data) {
    
    let tableLabel = document.getElementById("container-title-label");
@@ -767,7 +786,7 @@ async function displayAttendanceTables(data) {
    if (!Array.isArray(data) || !data.length) {
 
       // this is only triggered if the first time the attendance tab is selected
-      // the selected state has no data.
+      // and the selected state has no data.
       if (attendanceGridApi == undefined) {
 
          const attendanceTableGridDiv = document.querySelector("#attendanceTable");
@@ -809,7 +828,9 @@ async function displayAttendanceTables(data) {
       let attendanceFiltered = filterObj(data, attendanceCols);
 
       // if all values are undefined, the Check variables will also be undefined
-      attendanceCheck = attendanceFiltered.find(obj => typeof obj["Attendance Rate"] != 'undefined');
+      attendanceCheck = attendanceFiltered.find(
+         obj => typeof obj["Attendance Rate"] != 'undefined'
+      );
 
       if (attendanceCheck == undefined) {
 
@@ -834,8 +855,11 @@ async function displayAttendanceTables(data) {
 
          // drop objects (Years) with null values - note if a district has 
          // undefined values for all years, the district will be dropped
-         // completely // TODO: May want to change this later //
-         let attendanceCleaned = attendanceFiltered.filter(item => item["Attendance Rate"] !== undefined) 
+         // completely
+         /*  NOTE: May want to change this later */
+         let attendanceCleaned = attendanceFiltered.filter(
+            item => item["Attendance Rate"] !== undefined
+         ); 
 
          // Change "Attendance Rate" key to the applicable Year
          let attendanceRenamed = replaceKeyWithValue(attendanceCleaned, 'Year', 'Attendance Rate');
@@ -845,7 +869,7 @@ async function displayAttendanceTables(data) {
 
          let yearcols = getYearList(attendanceMerged)
 
-         // sort the values by the most recent year
+         // sort the table by the values of the most recent year of data
          let attendanceSorted = sortObjectsByNumberWithBlanksToEnd(attendanceMerged,yearcols[0])
 
          let attendanceTableOptions = createTitleTable(attendanceSorted, "attendanceTable");
@@ -867,12 +891,14 @@ async function displayAttendanceTables(data) {
             );
             attendanceGridApi.setGridOption("rowData", attendanceMerged);
          }      
-      }
+      };
 
       let absenteeismCols = ["ID", "District Name", "Year", "Chronic Absenteeism"];
       let absenteeismFiltered = filterObj(data, absenteeismCols);
 
-      absenteeismCheck = absenteeismFiltered.find(obj => typeof obj["Chronic Absenteeism"] != 'undefined');
+      absenteeismCheck = absenteeismFiltered.find(
+         obj => typeof obj["Chronic Absenteeism"] != 'undefined'
+      );
 
       if (absenteeismCheck == undefined) {
          if (absenteeismGridApi == undefined) {
@@ -891,15 +917,28 @@ async function displayAttendanceTables(data) {
             absenteeismGridApi.setGridOption("rowData", [])
             absenteeismGridApi.showNoRowsOverlay();
          }
+
       } else {
 
-         let absenteeismCleaned = absenteeismFiltered.filter(item => item["Chronic Absenteeism"] !== undefined)
-         let absenteeismRenamed = replaceKeyWithValue(absenteeismCleaned, 'Year', 'Chronic Absenteeism');
-         let absenteeismMerged = mergeObjectsWithSameValue(absenteeismRenamed, "ID")
+         let absenteeismCleaned = absenteeismFiltered.filter(
+            item => item["Chronic Absenteeism"] !== undefined
+         );
 
-         let absenteeismSorted = sortObjectsByNumberWithBlanksToEnd(absenteeismMerged,"2024")
+         let absenteeismRenamed = replaceKeyWithValue(
+            absenteeismCleaned, 'Year', 'Chronic Absenteeism'
+         );
 
-         let absenteeismTableOptions = createTitleTable(absenteeismSorted, "attendanceTable");
+         let absenteeismMerged = mergeObjectsWithSameValue(
+            absenteeismRenamed, "ID"
+         );
+
+         let absenteeismSorted = sortObjectsByNumberWithBlanksToEnd(
+            absenteeismMerged,"2024"
+         );
+
+         let absenteeismTableOptions = createTitleTable(
+            absenteeismSorted, "attendanceTable"
+         );
 
          if (!displayAttendanceTables.absenteeismInit) {
             
